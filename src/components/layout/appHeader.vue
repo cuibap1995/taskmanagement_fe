@@ -9,15 +9,15 @@ header {
   margin: 0;
   box-sizing: border-box;
 
-  position: fixed; /* giữ header ổn định */
+  position: fixed;
   top: 0;
   right: 0;
   left: var(--sidebar-width, 280px);
 
-  height: 60px; /* chiều cao THỰC */
+  height: 60px;
   background-color: #0f172a;
 
-  padding: 0 24px; /* padding ngang thôi */
+  padding: 0 24px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -44,7 +44,7 @@ header {
 .userIcon {
   background-color: #0bac9f;
 
-  width: 40px; /* cố định */
+  width: 40px;
   height: 40px;
 
   font-size: 18px;
