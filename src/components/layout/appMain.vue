@@ -11,8 +11,7 @@
   left: var(--sidebar-width);
   right: 0;
   bottom: 0;
-
-  background-color: #fff;
+  background-color: #f5f7fa;
   overflow-y: auto;
   padding: 24px;
 }
