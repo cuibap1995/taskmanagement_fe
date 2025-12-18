@@ -6,6 +6,16 @@
   --header-height: 65px;
   --sidebar-width: 260px;
   --header-height: 65px;
+  --primary-color: #00BFA5;
+  --background-color: #0F172A;
+  --background-active: #1E293B;
+  --text-color: #212121;
+  --border-color:#E0E0E0;
+  --grey-color: #757575;
+  --white-color: #FFFFFF;
+  --success-color: #4CAF50;
+  --warning-color: #FF9800;
+  --error-color: #F44336;
 }
 @media (max-width: 1024px) {
   :root {
