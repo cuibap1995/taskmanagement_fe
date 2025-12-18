@@ -4,10 +4,18 @@
     <small>Fill in the details to create a new task for your project</small>
   </div>
 
-  <TaskForm mode="create"> </TaskForm>
+  <TaskForm mode="create" @cancel="handleCancel" @submit="handleCreate"> </TaskForm>
 </template>
 <script setup>
+import { createTask } from "@/services/taskService";
 import TaskForm from "./TaskForm.vue";
+import router from "@/router";
+const handleCreate = async (payload) => {
+  await createTask(payload);
+}
+const handleCancel = () => {
+  router.back();
+}
 </script>
 <style scoped>
 .webTitle {
