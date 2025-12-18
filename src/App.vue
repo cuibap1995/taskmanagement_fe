@@ -1,7 +1,3 @@
-<script >
-
-</script>
-
-<template></template>
-
-<style></style>
+<template>
+    <RouterView></RouterView>
+</template>
