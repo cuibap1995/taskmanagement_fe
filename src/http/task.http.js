@@ -1,8 +1,7 @@
 import axios from "axios";
 
 export const createTaskHttp = (payload) => {
-  console.log(import.meta.env.VITE_API_BASE_URL);
-  const data = axios.post("http://localhost:8000/api/tasks", payload);
+  const data = axios.post("/api/tasks", payload);
 //   const data = fetch("http://localhost:8000/api/tasks", {
 //     method:"POST",
 //     headers: {
