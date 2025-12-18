@@ -13,6 +13,6 @@
   bottom: 0;
   background-color: #f5f7fa;
   overflow-y: auto;
-  padding: 24px;
+  padding: 10px 24px;
 }
 </style>

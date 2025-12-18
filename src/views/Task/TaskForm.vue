@@ -2,210 +2,211 @@
 import BaseButton from "@/components/ui/BaseButton.vue";
 import { Icon } from "@iconify/vue";
 const prop = defineProps({
-  mode: {
-    type: String,
-    default: "create", //create/update
-  },
-  data: {
-    type: Object,
-    default: () => ({}),
-  },
+    mode: {
+        type: String,
+        default: "create", //create/update
+    },
+    data: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 </script>
 <template>
-  <form class="task_form">
-    <section class="card">
-      <h3 class="card_title">Basic Information</h3>
-      <div class="grid">
-        <div class="field full">
-          <label for="title_input"
-            >Title <span style="color: red">*</span></label
-          >
-          <input
-            type="text"
-            placeholder="Ex: Design Mockup..."
-            id="title_input"
-            required
-            v-model="task.title"
-          />
-          <small>Enter a clear and concise title for the task</small>
-        </div>
-        <div class="field">
-          <label for="type">Type <span style="color: red">*</span></label>
-          <select name="type" id="type" required>
-            <option value="" disabled selected>Task</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="priority"
-            >Priority <span style="color: red">*</span></label
-          >
-          <select name="priority" required id="priority">
-            <option value="high">High</option>
-            <option value="medium" selected>Medium</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="project">Project <span style="color: red">*</span></label>
-          <select name="project" id="project" required>
-            <option value="" disabled selected>Select a Project</option>
-            <option value="1">Project 1</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="assignee">Assignee</label>
-          <select name="assignee" id="assignee">
-            <option value="" disabled selected>Not assigneed</option>
-          </select>
-        </div>
-        <div class="field" v-if="prop.mode === 'update'">
-          <label for="status">Status <span style="color: red">*</span></label>
-          <select name="status" id="status" required>
-            <option value="working">Working</option>
-            <option value="pending_review">Pending Review</option>
-            <option value="open" selected>Open</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
-        <div class="field" v-if="prop.mode === 'update'">
-          <label for="progress">Progress</label>
-          <input type="number" min="0" max="100" />
-        </div>
-      </div>
-      <div class="line"></div>
-      <h3 class="card_title">Timelines</h3>
-      <div class="grid">
-        <div class="field">
-          <label for="eStartDate">Expected Start Date</label>
-          <input type="date" id="eStartDate" />
-        </div>
-        <div class="field">
-          <label for="eEndDate">Expected End Date</label>
-          <input type="date" id="eEndDate" />
-        </div>
-      </div>
-      <div class="line"></div>
-      <h3 class="card_title">Details</h3>
-      <div class="grid">
-        <div class="field full">
-          <label for="description">Description</label>
-          <textarea name="description" id="description"></textarea>
-          <small
-            >Include all necessary details, requirements, and context</small
-          >
-        </div>
-      </div>
-      <div class="flex-btn" v-if="prop.mode === 'create'">
-        <BaseButton type-button="cancel"
-          ><Icon icon="charm:cross" />Cancel</BaseButton
-        >
-        <BaseButton type-button="primary"
-          ><Icon icon="charm:tick" />Create Task</BaseButton
-        >
-      </div>
-      <div class="flex-btn-btn" v-if="prop.mode === 'update'">
-        <div class="deleteBtn">
-          <BaseButton type-button="danger">
-            <Icon icon="gravity-ui:trash-bin" />Delete</BaseButton
-          >
-        </div>
-        <div class="flex-btn">
-          <BaseButton type-button="cancel">
-            <Icon icon="charm:cross" />
-            Cancel</BaseButton
-          >
-          <BaseButton type-button="primary"
-            ><Icon icon="charm:tick" />Update</BaseButton
-          >
-        </div>
-      </div>
-    </section>
-  </form>
+    <form class="task_form">
+        <section class="card">
+            <h3 class="card_title">Basic Information</h3>
+            <div class="grid">
+                <div class="field full">
+                    <label for="title_input">Title <span style="color: red">*</span></label>
+                    <input type="text" placeholder="Ex: Design Mockup..." id="title_input" required />
+                    <small>Enter a clear and concise title for the task</small>
+                </div>
+                <div class="field">
+                    <label for="type">Type <span style="color: red">*</span></label>
+                    <select name="type" id="type" required>
+                        <option value="" disabled selected>Task</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="priority">Priority <span style="color: red">*</span></label>
+                    <select name="priority" required id="priority">
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="project">Project <span style="color: red">*</span></label>
+                    <select name="project" id="project" required>
+                        <option value="" disabled selected>Select a Project</option>
+                        <option value="1">Project 1</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="assignee">Assignee</label>
+                    <select name="assignee" id="assignee">
+                        <option value="" disabled selected>Not assigneed</option>
+                    </select>
+                </div>
+                <div class="field" v-if="prop.mode === 'update'">
+                    <label for="status">Status <span style="color: red">*</span></label>
+                    <select name="status" id="status" required>
+                        <option value="working">Working</option>
+                        <option value="pending_review">Pending Review</option>
+                        <option value="open" selected>Open</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="field" v-if="prop.mode === 'update'">
+                    <label for="progress">Progress</label>
+                    <input type="number" min="0" max="100" />
+                </div>
+            </div>
+            <div class="line"></div>
+            <h3 class="card_title">Timelines</h3>
+            <div class="grid">
+                <div class="field">
+                    <label for="eStartDate">Expected Start Date</label>
+                    <input type="date" id="eStartDate" />
+                </div>
+                <div class="field">
+                    <label for="eEndDate">Expected End Date</label>
+                    <input type="date" id="eEndDate" />
+                </div>
+            </div>
+            <div class="line"></div>
+            <h3 class="card_title">Details</h3>
+            <div class="grid">
+                <div class="field full">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description"></textarea>
+                    <small>Include all necessary details, requirements, and context</small>
+                </div>
+            </div>
+            <div class="flex-btn" v-if="prop.mode === 'create'">
+                <BaseButton type-button="cancel">
+                    <Icon icon="charm:cross" />Cancel
+                </BaseButton>
+                <BaseButton type-button="primary">
+                    <Icon icon="charm:tick" />Create Task
+                </BaseButton>
+            </div>
+            <div class="flex-btn-btn" v-if="prop.mode === 'update'">
+                <div class="deleteBtn">
+                    <BaseButton type-button="danger">
+                        <Icon icon="gravity-ui:trash-bin" />Delete
+                    </BaseButton>
+                </div>
+                <div class="flex-btn">
+                    <BaseButton type-button="cancel">
+                        <Icon icon="charm:cross" />
+                        Cancel
+                    </BaseButton>
+                    <BaseButton type-button="primary">
+                        <Icon icon="charm:tick" />Update
+                    </BaseButton>
+                </div>
+            </div>
+        </section>
+    </form>
 </template>
 <style>
 .task_form {
-  max-width: 2100px;
-  margin: 0 auto;
+    max-width: 2100px;
+    margin: 0 auto;
 }
 
 .card {
-  font-size: 22px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
+    font-size: 22px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
 }
 
 .card small {
-  font-size: 12px;
-  display: block;
-  color: grey;
+    font-size: 12px;
+    display: block;
+    color: grey;
 }
+
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
+
 label {
-  font-weight: 600;
-  font-size: 14px;
+    font-weight: 600;
+    font-size: 14px;
 }
+
 .grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
 }
+
 .full {
-  grid-column: 1/-1;
+    grid-column: 1/-1;
 }
+
 input,
 select,
 textarea {
-  height: 44px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  box-sizing: border-box;
+    height: 44px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    box-sizing: border-box;
 }
+
 input:focus,
 select:focus,
 textarea:focus {
-  outline: none;
-  border-color: #10b981;
+    outline: none;
+    border-color: #10b981;
 }
+
 .line {
-  border: 1px solid #e4e4e4;
-  margin: 24px 0;
+    border: 1px solid #e4e4e4;
+    margin: 24px 0;
 }
+
 textarea {
-  min-height: 140px;
-  padding: 12px;
-  resize: none;
-  line-height: 1.5;
+    min-height: 140px;
+    padding: 12px;
+    resize: none;
+    line-height: 1.5;
 }
+
 .flex-btn {
-  display: flex;
-  margin-top: 20px;
-  justify-content: end;
-  align-items: center;
+    display: flex;
+    margin-top: 20px;
+    justify-content: end;
+    align-items: center;
 }
+
 .flex-btn button {
-  font-size: 16px;
-  font-weight: 300;
+    font-size: 16px;
+    font-weight: 300;
 }
+
 .flex-btn-btn {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
+
 .deleteBtn {
-  margin-top: 20px;
-  align-items: center;
+    margin-top: 20px;
+    align-items: center;
 }
+
 .deleteBtn button {
-  font-size: 16px;
-  font-weight: 300;
+    font-size: 16px;
+    font-weight: 300;
 }
 </style>

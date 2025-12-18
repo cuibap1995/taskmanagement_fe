@@ -1,7 +1,11 @@
 <template>
   <header>
-    <span><Icon icon="mdi:bell-outline" class="classIcon" /></span>
-    <span> <div class="userIcon">AD</div></span>
+    <span>
+      <Icon icon="mdi:bell-outline" class="classIcon" />
+    </span>
+    <span>
+      <div class="userIcon">AD</div>
+    </span>
   </header>
 </template>
 <style scoped>

@@ -2,35 +2,26 @@
   <nav>
     <div class="container">
       <div class="logo">
-        <img
-          class="logoImg"
-          src="../../assets/img/logo_export.png"
-          alt="logoApp"
-        />
+        <img class="logoImg" src="../../assets/img/logo_export.png" alt="logoApp" />
         <p class="logoText">Task Management</p>
       </div>
       <ul class="sideBarMenu">
         <li class="sideBarItem">
-          <a href="#" class="redirectATag"
-            ><Icon icon="mdi:home-outline" class="sideBarIcon" /><span>
-              Home</span
-            ></a
-          >
+          <a href="#" class="redirectATag">
+            <Icon icon="mdi:home-outline" class="sideBarIcon" /><span>
+              Home</span>
+          </a>
         </li>
         <li class="sideBarItem">
-          <a href="#" class="redirectATag"
-            ><Icon icon="tdesign:task-1" class="sideBarIcon" /><span>
-              Tasks</span
-            ></a
-          >
+          <a href="#" class="redirectATag">
+            <Icon icon="tdesign:task-1" class="sideBarIcon" /><span>
+              Tasks</span>
+          </a>
         </li>
         <li class="sideBarItem">
-          <a href="#" class="redirectATag"
-            ><Icon
-              icon="material-symbols:folder-outline"
-              class="sideBarIcon"
-            /><span> Projects</span></a
-          >
+          <a href="#" class="redirectATag">
+            <Icon icon="material-symbols:folder-outline" class="sideBarIcon" /><span> Projects</span>
+          </a>
         </li>
       </ul>
     </div>
@@ -71,6 +62,7 @@ nav {
 
   margin-bottom: 32px;
 }
+
 .logoText {
   font-size: 18px;
   font-weight: 600;
@@ -81,6 +73,7 @@ nav {
   display: block;
   margin: 0;
 }
+
 .logoImg {
   width: 30px;
   height: 30px;
