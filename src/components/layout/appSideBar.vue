@@ -7,13 +7,13 @@
       </div>
       <ul class="sideBarMenu">
         <li class="sideBarItem">
-          <a href="#" class="redirectATag">
+          <a href="/" class="redirectATag">
             <Icon icon="mdi:home-outline" class="sideBarIcon" /><span>
               Home</span>
           </a>
         </li>
         <li class="sideBarItem">
-          <a href="#" class="redirectATag">
+          <a href="/tasks" class="redirectATag">
             <Icon icon="tdesign:task-1" class="sideBarIcon" /><span>
               Tasks</span>
           </a>

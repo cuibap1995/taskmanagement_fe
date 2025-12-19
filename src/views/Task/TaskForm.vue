@@ -1,6 +1,7 @@
 <script setup>
 import BaseButton from "@/components/ui/BaseButton.vue";
 import { Icon } from "@iconify/vue";
+import { reactive } from "vue";
 const prop = defineProps({
     mode: {
         type: String,
@@ -11,26 +12,47 @@ const prop = defineProps({
         default: () => ({}),
     },
 });
+const emit = defineEmits(['submit', 'cancel', 'delete']);
+const form = reactive({
+    title: '',
+    description: '',
+    status: 'open',
+    priority: 'medium',
+    type: 'task',
+    progress: 0,
+    expected_start_date: '',
+    expected_end_date: '',
+    due_date: null,
+    project_id: 11,
+    assignee_id: null,
+    created_by: 1
+});
+
+const handleSubmit = () => {
+    emit('submit', { ...form });
+}
 </script>
 <template>
-    <form class="task_form">
+    <form class="task_form" @submit.prevent="handleSubmit">
         <section class="card">
             <h3 class="card_title">Basic Information</h3>
             <div class="grid">
                 <div class="field full">
                     <label for="title_input">Title <span style="color: red">*</span></label>
-                    <input type="text" placeholder="Ex: Design Mockup..." id="title_input" required />
+                    <input type="text" placeholder="Ex: Design Mockup..." id="title_input" required
+                        v-model="form.title" name="title"/>
                     <small>Enter a clear and concise title for the task</small>
                 </div>
                 <div class="field">
                     <label for="type">Type <span style="color: red">*</span></label>
-                    <select name="type" id="type" required>
-                        <option value="" disabled selected>Task</option>
+                    <select name="type" id="type" v-model="form.type" required>
+                        <option value="task" selected>Task</option>
+                        <option value="fix">Fix</option>
                     </select>
                 </div>
                 <div class="field">
                     <label for="priority">Priority <span style="color: red">*</span></label>
-                    <select name="priority" required id="priority">
+                    <select name="priority" v-model="form.priority" required id="priority">
                         <option value="high">High</option>
                         <option value="medium" selected>Medium</option>
                         <option value="low">Low</option>
@@ -38,20 +60,20 @@ const prop = defineProps({
                 </div>
                 <div class="field">
                     <label for="project">Project <span style="color: red">*</span></label>
-                    <select name="project" id="project" required>
+                    <select name="project_id" id="project" v-model="form.project_id" required>
                         <option value="" disabled selected>Select a Project</option>
-                        <option value="1">Project 1</option>
+                        <option value=11>Project 1</option>
                     </select>
                 </div>
                 <div class="field">
                     <label for="assignee">Assignee</label>
-                    <select name="assignee" id="assignee">
+                    <select name="assignee_id" v-model="form.assignee_id" id="assignee">
                         <option value="" disabled selected>Not assigneed</option>
                     </select>
                 </div>
                 <div class="field" v-if="prop.mode === 'update'">
                     <label for="status">Status <span style="color: red">*</span></label>
-                    <select name="status" id="status" required>
+                    <select name="status" id="status" v-model.number="form.status" required>
                         <option value="working">Working</option>
                         <option value="pending_review">Pending Review</option>
                         <option value="open" selected>Open</option>
@@ -60,7 +82,7 @@ const prop = defineProps({
                 </div>
                 <div class="field" v-if="prop.mode === 'update'">
                     <label for="progress">Progress</label>
-                    <input type="number" min="0" max="100" />
+                    <input type="number" name="progress" v-model="form.progress" min="0" max="100" />
                 </div>
             </div>
             <div class="line"></div>
@@ -68,11 +90,11 @@ const prop = defineProps({
             <div class="grid">
                 <div class="field">
                     <label for="eStartDate">Expected Start Date</label>
-                    <input type="date" id="eStartDate" />
+                    <input type="date" id="expected_start_date" v-model="form.expected_start_date" name="eStartDate" />
                 </div>
                 <div class="field">
                     <label for="eEndDate">Expected End Date</label>
-                    <input type="date" id="eEndDate" />
+                    <input type="date" id="expected_end_date" v-model="form.expected_end_date" name="eEndDate" />
                 </div>
             </div>
             <div class="line"></div>
@@ -80,12 +102,12 @@ const prop = defineProps({
             <div class="grid">
                 <div class="field full">
                     <label for="description">Description</label>
-                    <textarea name="description" id="description"></textarea>
+                    <textarea name="description" v-model="form.description" id="description"></textarea>
                     <small>Include all necessary details, requirements, and context</small>
                 </div>
             </div>
             <div class="flex-btn" v-if="prop.mode === 'create'">
-                <BaseButton type-button="cancel">
+                <BaseButton type-button="cancel" @click="emit('cancel')">
                     <Icon icon="charm:cross" />Cancel
                 </BaseButton>
                 <BaseButton type-button="primary">
@@ -94,12 +116,12 @@ const prop = defineProps({
             </div>
             <div class="flex-btn-btn" v-if="prop.mode === 'update'">
                 <div class="deleteBtn">
-                    <BaseButton type-button="danger">
+                    <BaseButton type-button="danger" @click="emit('delete')">
                         <Icon icon="gravity-ui:trash-bin" />Delete
                     </BaseButton>
                 </div>
                 <div class="flex-btn">
-                    <BaseButton type-button="cancel">
+                    <BaseButton type-button="cancel" @click="emit('cancel')">
                         <Icon icon="charm:cross" />
                         Cancel
                     </BaseButton>

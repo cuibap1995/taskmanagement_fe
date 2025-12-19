@@ -13,6 +13,11 @@ const router = createRouter({
       component: defaultLayout,
       children: [
         {
+          path: "",
+          component: Home,
+          name: "Home",
+        },
+        {
           path: "tasks",
           component: TaskList,
           name: "tasks",

@@ -6,12 +6,14 @@
                 <h1 class="title">Tasks</h1>
                 <p class="subtitle">Manage and monitor your team's tasks</p>
             </div>
-            <BaseButton typeButton="primary">
-                <template #icon>
-                    <Icon icon="mdi:plus" />
-                </template>
-                New Task
-            </BaseButton>
+            <a href="/tasks/create">
+                <BaseButton typeButton="primary">
+                    <template #icon>
+                        <Icon icon="mdi:plus" />
+                    </template>
+                    New Task
+                </BaseButton>
+            </a>
         </div>
 
         <!-- Panel Filter -->
