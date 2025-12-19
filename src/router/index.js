@@ -4,7 +4,8 @@ import defaultLayout from "@/components/layout/defaultLayout.vue";
 import TaskList from "@/views/Task/TaskList.vue";
 import TaskCreate from "@/views/Task/TaskCreate.vue";
 import TaskDetail from "@/views/Task/TaskDetail.vue";
-import TaskUpdate from "@/views/Task/TaskUpdate.vue";
+import TaskUpdate from "@/views/Task/TaskEdit.vue";
+import TaskEdit from "@/views/Task/TaskEdit.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -33,8 +34,8 @@ const router = createRouter({
           name: "taskdetail",
         },
         {
-          path: "tasks/update",
-          component: TaskUpdate,
+          path: "tasks/edit",
+          component: TaskEdit,
           name: "taskupdate",
         },
       ],

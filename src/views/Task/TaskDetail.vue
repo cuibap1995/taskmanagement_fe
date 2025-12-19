@@ -6,9 +6,11 @@
                 <h1 class="title">Design Homepage Mockup</h1>
             </div>
             <div class="header-actions">
-                <BaseButton typeButton="primary">
-                    <Icon icon="mdi:pencil-outline" />Edit
-                </BaseButton>
+                <a href="/tasks/edit">
+                    <BaseButton typeButton="primary">
+                        <Icon icon="mdi:pencil-outline" />Edit
+                    </BaseButton>
+                </a>
                 <BaseButton typeButton="danger">
                     <Icon icon="mdi:delete-outline" />Delete
                 </BaseButton>

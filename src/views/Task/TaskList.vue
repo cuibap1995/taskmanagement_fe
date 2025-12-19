@@ -6,14 +6,14 @@
                 <h1 class="title">Tasks</h1>
                 <p class="subtitle">Manage and monitor your team's tasks</p>
             </div>
-            <a href="/tasks/create">
-                <BaseButton typeButton="primary">
+            <div>
+                <BaseButton typeButton="primary" @click="toCreatePage">
                     <template #icon>
                         <Icon icon="mdi:plus" />
                     </template>
                     New Task
                 </BaseButton>
-            </a>
+            </div>
         </div>
 
         <!-- Panel Filter -->
@@ -111,12 +111,12 @@
                     </button>
                 </div>
             </div>
-
+            <input type="text" id="CheckId" value="" hidden>
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-check"><input type="checkbox" /></th>
+                            <th class="col-check"><input type="checkbox" v-model="isAllSelected" /></th>
                             <th>TASK NAME</th>
                             <th>TYPE</th>
                             <th>PROJECT</th>
@@ -129,30 +129,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="i in 7" :key="i">
-                            <td><input type="checkbox" /></td>
+                        <tr v-for="task in tasks" :key="task.task_id">
+                            <td><input type="checkbox" v-model="selectedTask" :value="task.task_id" /></td>
                             <td class="task-cell">
-                                <span class="task-title">Design UI mockup</span>
+                                <span class="task-title">{{ task.title }}</span>
                             </td>
                             <td>
                                 <BaseBadge variant="type" value="task"></BaseBadge>
                             </td>
-                            <td>Website Redesign</td>
-                            <td>Nguyễn Văn A</td>
-                            <td class="bold">65%</td>
+                            <td>{{ task.project_id }}</td>
+                            <td>{{ task.assignee_id }}</td>
+                            <td class="bold">{{ task.progress }}</td>
                             <td>
-                                <BaseBadge variant="priority" value="medium"></BaseBadge>
+                                <BaseBadge variant="priority" :value=task.priority></BaseBadge>
                             </td>
                             <td>
-                                <BaseBadge variant="status" value="working"></BaseBadge>
+                                <BaseBadge variant="status" :value=task.status></BaseBadge>
                             </td>
-                            <td>2025-12-10</td>
+                            <td>{{ task.due_date }}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="icon-btn edit">
-                                        <Icon icon="mdi:pencil-box-outline" />
-                                    </button>
-                                    <button class="icon-btn delete">
+                                    <div>
+                                        <button class="icon-btn edit" :taskId=task.task_id @click="toEditPage(task.task_id)">
+                                            <Icon icon="weui:eyes-on-outlined" />
+                                        </button>
+                                    </div>
+                                    <button class="icon-btn delete" :taskId=task.task_id
+                                        @click="handleDeleteTask(task.task_id)">
                                         <Icon icon="mdi:delete-outline" />
                                     </button>
                                 </div>
@@ -163,7 +166,7 @@
             </div>
 
             <div class="pagination-table">
-                <span class="showing-text">Showing <strong>1-10</strong> of 54 tasks</span>
+                <span class="showing-text">Showing <strong>...</strong> of {{ tasks.length }}</span>
                 <div class="pagination">
                     <button class="page-btn">
                         <Icon icon="mdi:chevron-left" />
@@ -185,7 +188,47 @@
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseBadge from '@/components/ui/BaseBadge.vue';
 import { Icon } from '@iconify/vue';
-import '@/assets/css/main.css'
+import '@/assets/css/main.css';
+import { getTaskList } from '@/services/taskService';
+import { deleteTask } from '@/services/taskService'
+import { ref, onMounted, computed } from 'vue';
+import router from "@/router";
+const tasks = ref([]);
+
+const handleTaskList = async () => {
+    try {
+        const res = await getTaskList();
+        tasks.value = res.data;
+    } catch (e) {
+        console.log(e);
+    }
+}
+onMounted(() => {
+    handleTaskList();
+})
+const handleDeleteTask = (id) => {
+    return deleteTask(id);
+}
+const selectedTask = ref([]);
+const isAllSelected = computed({
+    get() {
+        return (tasks.value.length > 0 &&
+            selectedTask.value.length == tasks.value.length)
+    },
+    set(value) {
+        if (value) {
+            selectedTask.value = tasks.value.map(t => t.task_id);
+        } else {
+            selectedTask.value = [];
+        }
+    }
+})
+const toCreatePage = () => {
+    router.push('/tasks/create');
+}
+const toEditPage = (id)=>{
+    router.push(`/tasks/edit/${id}`);
+}
 </script>
 
 <style scoped>
