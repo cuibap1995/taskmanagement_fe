@@ -149,8 +149,8 @@
                             <td>2025-12-10</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="icon-btn edit">
-                                        <Icon icon="mdi:pencil-box-outline" />
+                                    <button class="icon-btn view">
+                                        <Icon icon="weui:eyes-on-outlined" />
                                     </button>
                                     <button class="icon-btn delete">
                                         <Icon icon="mdi:delete-outline" />
@@ -261,6 +261,14 @@ select {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    color: var(--primary-color);
+    /* đổi màu tick */
+    cursor: pointer;
+}
+
 select {
     padding-left: 12px;
     background-color: var(--white-color);
@@ -309,7 +317,7 @@ select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
+    padding: 8px 24px;
     background-color: #fcfcfc;
 }
 
@@ -371,15 +379,14 @@ select:focus {
 }
 
 .data-table th {
-    padding: 12px 20px;
+    padding: 10px 4px;
     font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 .data-table td {
-    padding: 16px 20px;
+    padding: 10px 4px;
     border-bottom: 1px solid var(--border-color);
     font-size: 14px;
     color: var(--text-color);
@@ -406,7 +413,7 @@ select:focus {
     transition: background 0.2s;
 }
 
-.icon-btn.edit {
+.icon-btn.view {
     color: #00bcd4;
 }
 
