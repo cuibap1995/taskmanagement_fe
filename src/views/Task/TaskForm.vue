@@ -12,21 +12,24 @@ const prop = defineProps({
         default: () => ({}),
     },
 });
-const emit = defineEmits(['submit','cancel','delete']);
+const emit = defineEmits(['submit', 'cancel', 'delete']);
 const form = reactive({
-    title:'',
-    type:'Task',
-    priority:'Medium',
-    project:'',
-    assignee:'',
-    progress:0,
-    Expected_start_date:'',
-    Expected_end_date:'',
-    description:'',
-    status:''
+    title: '',
+    description: '',
+    status: 'open',
+    priority: 'medium',
+    type: 'task',
+    progress: 0,
+    expected_start_date: '',
+    expected_end_date: '',
+    due_date: null,
+    project_id: 11,
+    assignee_id: null,
+    created_by: 1
 });
-const handleSubmit = ()=>{
-    emit('submit',{...form});
+
+const handleSubmit = () => {
+    emit('submit', { ...form });
 }
 </script>
 <template>
@@ -36,7 +39,8 @@ const handleSubmit = ()=>{
             <div class="grid">
                 <div class="field full">
                     <label for="title_input">Title <span style="color: red">*</span></label>
-                    <input type="text" placeholder="Ex: Design Mockup..." id="title_input" required v-model="form.title"/>
+                    <input type="text" placeholder="Ex: Design Mockup..." id="title_input" required
+                        v-model="form.title" name="title"/>
                     <small>Enter a clear and concise title for the task</small>
                 </div>
                 <div class="field">
@@ -56,14 +60,14 @@ const handleSubmit = ()=>{
                 </div>
                 <div class="field">
                     <label for="project">Project <span style="color: red">*</span></label>
-                    <select name="project" id="project" v-model="form.project" required>
+                    <select name="project_id" id="project" v-model="form.project_id" required>
                         <option value="" disabled selected>Select a Project</option>
-                        <option value="1">Project 1</option>
+                        <option value=11>Project 1</option>
                     </select>
                 </div>
                 <div class="field">
                     <label for="assignee">Assignee</label>
-                    <select name="assignee" v-model="form.assignee" id="assignee">
+                    <select name="assignee_id" v-model="form.assignee_id" id="assignee">
                         <option value="" disabled selected>Not assigneed</option>
                     </select>
                 </div>
@@ -86,11 +90,11 @@ const handleSubmit = ()=>{
             <div class="grid">
                 <div class="field">
                     <label for="eStartDate">Expected Start Date</label>
-                    <input type="date" id="eStartDate" v-model="form.Expected_start_date" name="eStartDate"/>
+                    <input type="date" id="expected_start_date" v-model="form.expected_start_date" name="eStartDate" />
                 </div>
                 <div class="field">
                     <label for="eEndDate">Expected End Date</label>
-                    <input type="date" id="eEndDate" v-model="form.Expected_end_date" name="eEndDate" />
+                    <input type="date" id="expected_end_date" v-model="form.expected_end_date" name="eEndDate" />
                 </div>
             </div>
             <div class="line"></div>
@@ -103,7 +107,7 @@ const handleSubmit = ()=>{
                 </div>
             </div>
             <div class="flex-btn" v-if="prop.mode === 'create'">
-                <BaseButton type-button="cancel" @click="emit('cancel')" >
+                <BaseButton type-button="cancel" @click="emit('cancel')">
                     <Icon icon="charm:cross" />Cancel
                 </BaseButton>
                 <BaseButton type-button="primary">
