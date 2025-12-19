@@ -1,6 +1,6 @@
 <template>
     <div class="tasks-page">
-    <!-- Title Task -->
+        <!-- Title Task -->
         <div class="page-header">
             <div class="page-title-content">
                 <h1 class="title">Tasks</h1>
@@ -132,12 +132,18 @@
                             <td class="task-cell">
                                 <span class="task-title">Design UI mockup</span>
                             </td>
-                            <td><BaseBadge variant="type" value="task"></BaseBadge></td>
+                            <td>
+                                <BaseBadge variant="type" value="task"></BaseBadge>
+                            </td>
                             <td>Website Redesign</td>
                             <td>Nguyễn Văn A</td>
                             <td class="bold">65%</td>
-                            <td><BaseBadge variant="priority" value="medium"></BaseBadge></td>
-                            <td><BaseBadge variant="status" value="working"></BaseBadge></td>
+                            <td>
+                                <BaseBadge variant="priority" value="medium"></BaseBadge>
+                            </td>
+                            <td>
+                                <BaseBadge variant="status" value="working"></BaseBadge>
+                            </td>
                             <td>2025-12-10</td>
                             <td>
                                 <div class="action-buttons">
@@ -175,9 +181,9 @@
 </template>
 <script setup>
 import BaseButton from '@/components/ui/BaseButton.vue';
+import BaseBadge from '@/components/ui/BaseBadge.vue';
 import { Icon } from '@iconify/vue';
 import '@/assets/css/main.css'
-import BaseBadge from '@/components/ui/BaseBadge.vue';
 </script>
 
 <style scoped>
@@ -186,6 +192,7 @@ import BaseBadge from '@/components/ui/BaseBadge.vue';
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 24px 0;
 }
 
 .title {
@@ -376,7 +383,7 @@ select:focus {
     color: var(--text-color);
 }
 
-.data-table tr:hover {
+.data-table tbody tr:hover {
     background-color: #f9fafb;
 }
 
