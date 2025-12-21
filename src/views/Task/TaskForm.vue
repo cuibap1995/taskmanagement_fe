@@ -31,6 +31,12 @@ const form = reactive({
 const handleSubmit = () => {
     emit('submit', { ...form });
 }
+const resetForm = () => {
+    Object.keys(form).forEach(key => {
+        form[key] = '';
+    })
+}
+defineExpose({resetForm});
 </script>
 <template>
     <form class="task_form" @submit.prevent="handleSubmit">
@@ -39,15 +45,16 @@ const handleSubmit = () => {
             <div class="grid">
                 <div class="field full">
                     <label for="title_input">Title <span style="color: red">*</span></label>
-                    <input type="text" placeholder="Ex: Design Mockup..." id="title_input" required
-                        v-model="form.title" name="title"/>
+                    <input type="text" placeholder="Ex: Design Mockup..." id="title_input" required v-model="form.title"
+                        name="title" />
                     <small>Enter a clear and concise title for the task</small>
                 </div>
                 <div class="field">
                     <label for="type">Type <span style="color: red">*</span></label>
                     <select name="type" id="type" v-model="form.type" required>
                         <option value="task" selected>Task</option>
-                        <option value="fix">Fix</option>
+                        <option value="bug">Bug</option>
+                        <option value="feature">Feature</option>
                     </select>
                 </div>
                 <div class="field">
@@ -75,7 +82,7 @@ const handleSubmit = () => {
                     <label for="status">Status <span style="color: red">*</span></label>
                     <select name="status" id="status" v-model.number="form.status" required>
                         <option value="working">Working</option>
-                        <option value="pending_review">Pending Review</option>
+                        <option value="pending review">Pending Review</option>
                         <option value="open" selected>Open</option>
                         <option value="completed">Completed</option>
                     </select>
@@ -88,6 +95,10 @@ const handleSubmit = () => {
             <div class="line"></div>
             <h3 class="card_title">Timelines</h3>
             <div class="grid">
+                <div class="field full">
+                    <label for="due">Due Date <span style="color: red;">*</span></label>
+                    <input type="date" id="due" name="due_date" v-model="form.due_date" required>
+                </div>
                 <div class="field">
                     <label for="eStartDate">Expected Start Date</label>
                     <input type="date" id="expected_start_date" v-model="form.expected_start_date" name="eStartDate" />

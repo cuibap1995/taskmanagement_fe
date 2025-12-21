@@ -15,23 +15,23 @@ const props = defineProps({
 </template>
 
 <style scoped>
-    .btn{
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 10px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        border: 1px solid transparent;
-        line-height: 1;
-    }
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    line-height: 1;
+}
 
-    .btn-icon{
-        width: 1.2rem;
-        height: 1.2rem;
-        display: block;
-    }
+.btn-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    display: block;
+}
 
 .primary {
     color: #fff;

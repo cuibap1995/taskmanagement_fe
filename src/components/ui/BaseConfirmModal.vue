@@ -54,6 +54,15 @@ const emit = defineEmits(['confirm', 'cancel']);
     width: 420px;
 }
 
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .card {
     background-color: #fff;
     border-radius: 8px;

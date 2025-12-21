@@ -150,12 +150,13 @@
                             <td>
                                 <div class="action-buttons">
                                     <div>
-                                        <button class="icon-btn edit" :taskId=task.task_id @click="toEditPage(task.task_id)">
+                                        <button class="icon-btn edit" :taskId=task.task_id
+                                            @click="toEditPage(task.task_id)">
                                             <Icon icon="weui:eyes-on-outlined" />
                                         </button>
                                     </div>
                                     <button class="icon-btn delete" :taskId=task.task_id
-                                        @click="handleDeleteTask(task.task_id)">
+                                        @click="openDeleteModal(task.task_id)">
                                         <Icon icon="mdi:delete-outline" />
                                     </button>
                                 </div>
@@ -164,7 +165,6 @@
                     </tbody>
                 </table>
             </div>
-
             <div class="pagination-table">
                 <span class="showing-text">Showing <strong>...</strong> of {{ tasks.length }}</span>
                 <div class="pagination">
@@ -181,12 +181,18 @@
                     </button>
                 </div>
             </div>
+            <BaseConfirmModal v-if="showDeleteModal" mode="delete"
+                message="Are you sure you want to delete this task?\nThis action is permanent and cannot be undone."
+                cancelText="Cancel" confirmText="Confirm" title="Delete this task?" @cancel="cancelDelete"
+                @confirm="confirmDelete">
+            </BaseConfirmModal>
         </section>
     </div>
 </template>
 <script setup>
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseBadge from '@/components/ui/BaseBadge.vue';
+import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
 import { Icon } from '@iconify/vue';
 import '@/assets/css/main.css';
 import { getTaskList } from '@/services/taskService';
@@ -195,10 +201,34 @@ import { ref, onMounted, computed } from 'vue';
 import router from "@/router";
 const tasks = ref([]);
 
+const showDeleteModal = ref(false);
+const deletingTaskId = ref(null);
+const cancelDelete = () => {
+    showDeleteModal.value = false;
+    deletingTaskId.value = null;
+}
+const openDeleteModal = (id) => {
+    showDeleteModal.value = true;
+    deletingTaskId.value = id;
+}
+const confirmDelete = async () => {
+    try {
+        const isDeleted = await deleteTask(deletingTaskId.value);
+        if (isDeleted) {
+            await handleTaskList();
+        }
+    } catch (error) {
+        console.log(error);
+    } finally {
+        showDeleteModal.value = false;
+        deletingTaskId.value = null;
+    }
+}
 const handleTaskList = async () => {
     try {
         const res = await getTaskList();
         tasks.value = res.data;
+        console.log(res.data)
     } catch (e) {
         console.log(e);
     }
@@ -206,9 +236,6 @@ const handleTaskList = async () => {
 onMounted(() => {
     handleTaskList();
 })
-const handleDeleteTask = (id) => {
-    return deleteTask(id);
-}
 const selectedTask = ref([]);
 const isAllSelected = computed({
     get() {
@@ -221,12 +248,16 @@ const isAllSelected = computed({
         } else {
             selectedTask.value = [];
         }
+        selectedTask.value = value
+            ? tasks.value.map(t => t.task_id)
+            : [];
     }
+
 })
 const toCreatePage = () => {
     router.push('/tasks/create');
 }
-const toEditPage = (id)=>{
+const toEditPage = (id) => {
     router.push(`/tasks/edit/${id}`);
 }
 </script>

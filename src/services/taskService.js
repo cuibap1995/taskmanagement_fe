@@ -8,7 +8,6 @@ import {
 
 export const createTask = async (data) => {
   const res = await createTaskHttp(data);
-  console.log(res);
   return res.data;
 };
 export const getTaskById = async (id) => {
