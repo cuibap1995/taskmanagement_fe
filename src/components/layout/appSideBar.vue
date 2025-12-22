@@ -7,21 +7,21 @@
       </div>
       <ul class="sideBarMenu">
         <li class="sideBarItem">
-          <a href="/" class="redirectATag">
+          <RouterLink to="/" class="redirectATag">
             <Icon icon="mdi:home-outline" class="sideBarIcon" /><span>
               Home</span>
-          </a>
+          </RouterLink>
         </li>
         <li class="sideBarItem">
-          <a href="/tasks" class="redirectATag">
+          <RouterLink to="/tasks" class="redirectATag">
             <Icon icon="tdesign:task-1" class="sideBarIcon" /><span>
               Tasks</span>
-          </a>
+          </RouterLink>
         </li>
         <li class="sideBarItem">
-          <a href="#" class="redirectATag">
+          <RouterLink to="#" class="redirectATag">
             <Icon icon="material-symbols:folder-outline" class="sideBarIcon" /><span> Projects</span>
-          </a>
+          </RouterLink>
         </li>
       </ul>
     </div>

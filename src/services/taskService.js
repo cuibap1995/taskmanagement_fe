@@ -3,11 +3,12 @@ import {
   createTaskHttp,
   updateTaskHttp,
   searchTaskHttp,
+  getTaskListHttp,
+  deleteTaskHttp
 } from "../http/task.http.js";
 
 export const createTask = async (data) => {
   const res = await createTaskHttp(data);
-  console.log(res);
   return res.data;
 };
 export const getTaskById = async (id) => {
@@ -21,4 +22,12 @@ export const updateTask = async (id, payload) => {
 export const searchTask = async (payload) => {
   const res = await searchTaskHttp(payload);
   return res.data
+}
+export const getTaskList = async ()=>{
+  const res = await getTaskListHttp();
+  return res.data;
+}
+export const deleteTask = async (id)=>{
+  const res = await deleteTaskHttp(id);
+  return res.data;
 }

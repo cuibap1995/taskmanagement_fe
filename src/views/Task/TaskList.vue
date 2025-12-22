@@ -6,14 +6,14 @@
                 <h1 class="title">Tasks</h1>
                 <p class="subtitle">Manage and monitor your team's tasks</p>
             </div>
-            <a href="/tasks/create">
-                <BaseButton typeButton="primary">
+            <div>
+                <BaseButton typeButton="primary" @click="toCreatePage">
                     <template #icon>
                         <Icon icon="mdi:plus" />
                     </template>
                     New Task
                 </BaseButton>
-            </a>
+            </div>
         </div>
 
         <!-- Panel Filter -->
@@ -111,12 +111,12 @@
                     </button>
                 </div>
             </div>
-
+            <input type="text" id="CheckId" value="" hidden>
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th class="col-check"><input type="checkbox" /></th>
+                            <th class="col-check"><input type="checkbox" v-model="isAllSelected" /></th>
                             <th>TASK NAME</th>
                             <th>TYPE</th>
                             <th>PROJECT</th>
@@ -136,7 +136,7 @@
                             <td colspan="10" style="text-align: center; padding: 20px;">No Data Found</td>
                         </tr>
                         <tr v-else v-for="task in tasks" :key="task.task_id">
-                            <td><input type="checkbox"></td>
+                            <td><input type="checkbox" v-model="selectedTask" :value="task.task_id" /></td>
                             <td class="task-cell">
                                 <span class="task-title">{{ task.title }}</span>
                             </td>
@@ -154,14 +154,18 @@
                                 <BaseBadge variant="status" v-model="task.status" :editable="isEditMode"></BaseBadge>
                             </td>
 
-                            <td>{{ task.expected_end_date }}</td>
+                            <td>{{ task.due_date }}</td>
 
                             <td>
                                 <div class="action-buttons">
-                                    <button class="icon-btn edit">
-                                        <Icon icon="mdi:pencil-box-outline" />
-                                    </button>
-                                    <button class="icon-btn delete">
+                                    <div>
+                                        <button class="icon-btn edit" :taskId=task.task_id
+                                            @click="toEditPage(task.task_id)">
+                                            <Icon icon="weui:eyes-on-outlined" />
+                                        </button>
+                                    </div>
+                                    <button class="icon-btn delete" :taskId=task.task_id
+                                        @click="openDeleteModal(task.task_id)">
                                         <Icon icon="mdi:delete-outline" />
                                     </button>
                                 </div>
@@ -170,9 +174,8 @@
                     </tbody>
                 </table>
             </div>
-
             <div class="pagination-table">
-                <span class="showing-text">Showing <strong>1-10</strong> of 54 tasks</span>
+                <span class="showing-text">Showing <strong>...</strong> of {{ tasks.length }}</span>
                 <div class="pagination">
                     <button class="page-btn">
                         <Icon icon="mdi:chevron-left" />
@@ -187,16 +190,23 @@
                     </button>
                 </div>
             </div>
+            <BaseConfirmModal v-if="showDeleteModal" mode="delete"
+                message="Are you sure you want to delete this task?\nThis action is permanent and cannot be undone."
+                cancelText="Cancel" confirmText="Confirm" title="Delete this task?" @cancel="cancelDelete"
+                @confirm="confirmDelete">
+            </BaseConfirmModal>
         </section>
     </div>
 </template>
 <script setup>
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseBadge from '@/components/ui/BaseBadge.vue';
+import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
 import { Icon } from '@iconify/vue';
 import '@/assets/css/main.css'
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { searchTask } from '@/services/taskService';
+import router from "@/router";
 
 const initialFilters = {
     project_id: '',
@@ -212,6 +222,10 @@ const initialFilters = {
 const tasks = ref([]);
 const isLoading = ref(false);
 const pagination = ref({});
+const showDeleteModal = ref(false);
+const deletingTaskId = ref(null);
+const selectedTask = ref([]);
+const isEditMode = ref(false);
 
 const filters = reactive({ ...initialFilters });
 
@@ -236,11 +250,63 @@ const clearFilter = () => {
     fetchTasks(1);
 }
 
-const isEditMode = ref(false);
-
 onMounted(() => {
     fetchTasks();
 });
+
+const cancelDelete = () => {
+    showDeleteModal.value = false;
+    deletingTaskId.value = null;
+}
+const openDeleteModal = (id) => {
+    showDeleteModal.value = true;
+    deletingTaskId.value = id;
+}
+const confirmDelete = async () => {
+    try {
+        const isDeleted = await deleteTask(deletingTaskId.value);
+        if (isDeleted) {
+            await handleTaskList();
+        }
+    } catch (error) {
+        console.log(error);
+    } finally {
+        showDeleteModal.value = false;
+        deletingTaskId.value = null;
+    }
+}
+const handleTaskList = async () => {
+    try {
+        const res = await getTaskList();
+        tasks.value = res.data;
+        console.log(res.data)
+    } catch (e) {
+        console.log(e);
+    }
+}
+const isAllSelected = computed({
+    get() {
+        return (tasks.value.length > 0 &&
+            selectedTask.value.length == tasks.value.length)
+    },
+    set(value) {
+        if (value) {
+            selectedTask.value = tasks.value.map(t => t.task_id);
+        } else {
+            selectedTask.value = [];
+        }
+        selectedTask.value = value
+            ? tasks.value.map(t => t.task_id)
+            : [];
+    }
+
+})
+const toCreatePage = () => {
+    router.push('/tasks/create');
+}
+const toEditPage = (id) => {
+    router.push(`/tasks/edit/${id}`);
+}
 </script>
 
 <style scoped>
@@ -316,6 +382,13 @@ select {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
 select {
     padding-left: 12px;
     background-color: var(--white-color);
@@ -364,7 +437,7 @@ select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
+    padding: 8px 24px;
     background-color: #fcfcfc;
 }
 
@@ -426,15 +499,14 @@ select:focus {
 }
 
 .data-table th {
-    padding: 12px 20px;
+    padding: 10px 4px;
     font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 
 .data-table td {
-    padding: 16px 20px;
+    padding: 10px 4px;
     border-bottom: 1px solid var(--border-color);
     font-size: 14px;
     color: var(--text-color);
@@ -461,7 +533,7 @@ select:focus {
     transition: background 0.2s;
 }
 
-.icon-btn.edit {
+.icon-btn.view {
     color: #00bcd4;
 }
 
