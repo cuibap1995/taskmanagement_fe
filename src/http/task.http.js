@@ -9,3 +9,6 @@ export const getTaskByIdHttp = (id) => {
 export const updateTaskHttp = (id, payload) => {
   return axios.put(`/tasks/${id}`, payload);
 };
+export const searchTaskHttp = (payload) => {
+  return axios.get("/tasks", { params: payload });
+}

@@ -23,45 +23,45 @@
                     <label>Task Name</label>
                     <div class="input-wrapper">
                         <Icon icon="mdi:magnify" class="input-icon" />
-                        <input type="text" placeholder="Search by task name..." />
+                        <input type="text" v-model="filters.task_name" placeholder="Search by task name..." />
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Project Name</label>
                     <div class="input-wrapper">
                         <Icon icon="mdi:magnify" class="input-icon" />
-                        <input type="text" placeholder="Search by project name..." />
+                        <input type="text" v-model="filters.project_name" placeholder="Search by project name..." />
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Assignee</label>
                     <div class="input-wrapper">
                         <Icon icon="mdi:magnify" class="input-icon" />
-                        <input type="text" placeholder="Search by assignee..." />
+                        <input type="text" v-model="filters.assignee_name" placeholder="Search by assignee..." />
                     </div>
                 </div>
             </div>
 
             <div class="filter-row-select">
-                <select>
-                    <option>All Type</option>
-                    <option>Task</option>
-                    <option>Feature</option>
-                    <option>Bug</option>
-                    <option>Enhancement</option>
+                <select v-model="filters.type">
+                    <option value="">All Type</option>
+                    <option value="task">Task</option>
+                    <option value="feature">Feature</option>
+                    <option value="bug">Bug</option>
+                    <option value="enhancement">Enhancement</option>
                 </select>
-                <select>
-                    <option>All Priority</option>
-                    <option>High</option>
-                    <option>Medium</option>
-                    <option>Low</option>
+                <select v-model="filters.priority">
+                    <option value="">All Priority</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
                 </select>
-                <select>
-                    <option>All Status</option>
-                    <option>Open</option>
-                    <option>Working</option>
-                    <option>Pending Review</option>
-                    <option>Completed</option>
+                <select v-model="filters.status">
+                    <option value="">All Status</option>
+                    <option value="open">Open</option>
+                    <option value="working">Working</option>
+                    <option value="pending">Pending Review</option>
+                    <option value="completed">Completed</option>
                 </select>
             </div>
 
@@ -69,20 +69,20 @@
             <div class="filter-row-actions">
                 <span class="selection-text">No tasks selected</span>
                 <div class="button-group">
-                    <BaseButton typeButton="primary">
+                    <BaseButton typeButton="primary" @click="fetchTasks">
                         <template #icon>
                             <Icon icon="mdi:magnify" />
                         </template> Search
                     </BaseButton>
-                    <BaseButton typeButton="outline">
+                    <BaseButton typeButton="outline" @click="clearFilter">
                         <template #icon>
                             <Icon icon="mdi:refresh" />
                         </template> Clear Filter
                     </BaseButton>
-                    <BaseButton typeButton="outline" class="info-btn">
+                    <BaseButton typeButton="outline" class="info-btn" @click="isEditMode = !isEditMode">
                         <template #icon>
                             <Icon icon="mdi:pencil-outline" />
-                        </template> Edit
+                        </template> {{ isEditMode ? 'Save changes' : 'Edit' }}
                     </BaseButton>
                     <BaseButton typeButton="danger">
                         <template #icon>
@@ -129,24 +129,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="i in 7" :key="i">
-                            <td><input type="checkbox" /></td>
+                        <tr v-if="isLoading">
+                            <td colspan="10" style="text-align: center;padding: 20px">Loading data...</td>
+                        </tr>
+                        <tr v-else-if="tasks.length === 0">
+                            <td colspan="10" style="text-align: center; padding: 20px;">No Data Found</td>
+                        </tr>
+                        <tr v-else v-for="task in tasks" :key="task.task_id">
+                            <td><input type="checkbox"></td>
                             <td class="task-cell">
-                                <span class="task-title">Design UI mockup</span>
+                                <span class="task-title">{{ task.title }}</span>
                             </td>
                             <td>
-                                <BaseBadge variant="type" value="task"></BaseBadge>
+                                <BaseBadge variant="type" v-model="task.type" :editable="isEditMode" />
                             </td>
-                            <td>Website Redesign</td>
-                            <td>Nguyễn Văn A</td>
-                            <td class="bold">65%</td>
+                            <td>{{ task.project ? task.project.project_name : '' }}</td>
+                            <td>{{ task.assignee ? task.assignee.username : 'Unassigned' }}</td>
+                            <td class="bold">{{ task.progress || 0 }}%</td>
                             <td>
-                                <BaseBadge variant="priority" value="medium"></BaseBadge>
+                                <BaseBadge variant="priority" v-model="task.priority" :editable="isEditMode">
+                                </BaseBadge>
                             </td>
                             <td>
-                                <BaseBadge variant="status" value="working"></BaseBadge>
+                                <BaseBadge variant="status" v-model="task.status" :editable="isEditMode"></BaseBadge>
                             </td>
-                            <td>2025-12-10</td>
+
+                            <td>{{ task.expected_end_date }}</td>
+
                             <td>
                                 <div class="action-buttons">
                                     <button class="icon-btn edit">
@@ -186,6 +195,52 @@ import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseBadge from '@/components/ui/BaseBadge.vue';
 import { Icon } from '@iconify/vue';
 import '@/assets/css/main.css'
+import { ref, reactive, onMounted } from 'vue';
+import { searchTask } from '@/services/taskService';
+
+const initialFilters = {
+    project_id: '',
+    task_name: '',
+    project_name: '',
+    assignee_name: '',
+    type: '',
+    priority: '',
+    status: '',
+    page: 1
+};
+
+const tasks = ref([]);
+const isLoading = ref(false);
+const pagination = ref({});
+
+const filters = reactive({ ...initialFilters });
+
+const fetchTasks = async (page = 1) => {
+    isLoading.value = true;
+    try {
+        filters.page = page;
+        const res = await searchTask(filters);
+        if (res && res.data) {
+            tasks.value = res.data.data;
+            pagination.value = res.data;
+        }
+    } catch (error) {
+        console.log("Error:", error);
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const clearFilter = () => {
+    Object.assign(filters, initialFilters);
+    fetchTasks(1);
+}
+
+const isEditMode = ref(false);
+
+onMounted(() => {
+    fetchTasks();
+});
 </script>
 
 <style scoped>
