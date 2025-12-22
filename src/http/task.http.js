@@ -10,7 +10,7 @@ export const updateTaskHttp = (id, payload) => {
   return axios.put(`/api/tasks/${id}`, payload);
 };
 export const searchTaskHttp = (payload) => {
-  return axios.get("/tasks", { params: payload });
+  return axios.get("api/tasks", { params: payload });
 }
 export const getTaskListHttp = ()=>{
   return axios.get('/api/tasks');

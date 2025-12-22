@@ -175,17 +175,16 @@
                 </table>
             </div>
             <div class="pagination-table">
-                <span class="showing-text">Showing <strong>...</strong> of {{ tasks.length }}</span>
+                <span class="showing-text"><strong>{{ showingText }}</strong></span>
                 <div class="pagination">
-                    <button class="page-btn">
+                    <button class="page-btn" :disabled="pagination.current_page === 1"
+                        @click="pagination.current_page - 1">
                         <Icon icon="mdi:chevron-left" />
                     </button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span class="page-dots">...</span>
-                    <button class="page-btn">11</button>
-                    <button class="page-btn">
+                    <button v-for="(pages,index) in pagination.last_page" class="page-btn" :key="pages"
+                        :class="{ active: pages === pagination.current_page }" @click="fetchTasks(pages)">{{ index+1 }}</button>
+                    <button class="page-btn" :disabled="pagination.current_page === pagination.last_page"
+                        @click="pagination.current_page + 1">
                         <Icon icon="mdi:chevron-right" />
                     </button>
                 </div>
@@ -195,6 +194,8 @@
                 cancelText="Cancel" confirmText="Confirm" title="Delete this task?" @cancel="cancelDelete"
                 @confirm="confirmDelete">
             </BaseConfirmModal>
+            <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage"
+                :toast-title="toastTitle" @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
         </section>
     </div>
 </template>
@@ -206,6 +207,8 @@ import { Icon } from '@iconify/vue';
 import '@/assets/css/main.css'
 import { ref, reactive, onMounted, computed } from 'vue';
 import { searchTask } from '@/services/taskService';
+import { deleteTask } from '@/services/taskService';
+import BaseToast from '@/components/ui/BaseToast.vue';
 import router from "@/router";
 
 const initialFilters = {
@@ -216,17 +219,27 @@ const initialFilters = {
     type: '',
     priority: '',
     status: '',
-    page: 1
+    page: 1,
+    per_page: 1
 };
 
 const tasks = ref([]);
 const isLoading = ref(false);
-const pagination = ref({});
+const pagination = ref({
+    current_page: 1,
+    last_page: 1,
+    per_page: 1,
+    total: 0
+});
 const showDeleteModal = ref(false);
 const deletingTaskId = ref(null);
 const selectedTask = ref([]);
 const isEditMode = ref(false);
-
+const toastTitle = ref('success');
+const toastMessage = ref('');
+const toastType = ref('success');
+const isToastDisplay = ref(false);
+const isLeaving = ref(false);
 const filters = reactive({ ...initialFilters });
 
 const fetchTasks = async (page = 1) => {
@@ -235,11 +248,12 @@ const fetchTasks = async (page = 1) => {
         filters.page = page;
         const res = await searchTask(filters);
         if (res && res.data) {
-            tasks.value = res.data.data;
-            pagination.value = res.data;
+            tasks.value = res.data;
+            pagination.value = res.meta;
         }
     } catch (error) {
         console.log("Error:", error);
+        handleToast('error', "Error", 'Failed to load tasks');
     } finally {
         isLoading.value = false;
     }
@@ -264,25 +278,36 @@ const openDeleteModal = (id) => {
 }
 const confirmDelete = async () => {
     try {
+        isLoading.value = true;
+        showDeleteModal.value = false;
         const isDeleted = await deleteTask(deletingTaskId.value);
         if (isDeleted) {
-            await handleTaskList();
+            await fetchTasks();
+            handleToast('success', 'Success', 'Task deleted successfully');
         }
     } catch (error) {
         console.log(error);
+        handleToast('error', "Error", 'Failed to delete task');
     } finally {
-        showDeleteModal.value = false;
         deletingTaskId.value = null;
+        isLoading.value = false;
     }
 }
-const handleTaskList = async () => {
-    try {
-        const res = await getTaskList();
-        tasks.value = res.data;
-        console.log(res.data)
-    } catch (e) {
-        console.log(e);
-    }
+const closeToast = () => {
+    isLeaving.value = true;
+    setTimeout(() => {
+        isLeaving.value = false;
+        isToastDisplay.value = false;
+    }, 300);
+}
+const handleToast = (type, title, message) => {
+    isToastDisplay.value = true;
+    toastType.value = type;
+    toastTitle.value = title;
+    toastMessage.value = message
+    setTimeout(() => {
+        closeToast();
+    }, 4000);
 }
 const isAllSelected = computed({
     get() {
@@ -301,6 +326,21 @@ const isAllSelected = computed({
     }
 
 })
+const showingText = computed(() => {
+    if (!pagination.value.total || pagination.value.total === 0) {
+        return 'Showing 0 of 0';
+    }
+
+    const start =
+        (pagination.value.current_page - 1) * pagination.value.per_page + 1;
+
+    const end = Math.min(
+        pagination.value.current_page * pagination.value.per_page,
+        pagination.value.total
+    );
+
+    return `Showing ${start} - ${end} of ${pagination.value.total}`;
+});
 const toCreatePage = () => {
     router.push('/tasks/create');
 }

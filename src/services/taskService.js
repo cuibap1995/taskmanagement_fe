@@ -21,7 +21,7 @@ export const updateTask = async (id, payload) => {
 };
 export const searchTask = async (payload) => {
   const res = await searchTaskHttp(payload);
-  return res.data
+  return res.data;
 }
 export const getTaskList = async ()=>{
   const res = await getTaskListHttp();
