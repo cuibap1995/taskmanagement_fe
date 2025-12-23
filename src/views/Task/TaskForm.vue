@@ -57,6 +57,7 @@ defineExpose({ resetForm });
                         <option value="task" selected>Task</option>
                         <option value="bug">Bug</option>
                         <option value="feature">Feature</option>
+                        <option value="enhancement">Enhancement</option>
                     </select>
                 </div>
                 <div class="field">

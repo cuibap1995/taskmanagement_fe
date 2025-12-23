@@ -103,14 +103,14 @@
                             Clear Filter
                         </BaseButton>
                         <BaseButton typeButton="outline" :disabled="selectedTask.length === 0"
-                            @click="isEditMode = !isEditMode">
+                            @click="handleSaveOrEdit">
                             <template #icon>
                                 <Icon :icon="isEditMode ? 'mdi:content-save' : 'mdi:pencil-outline'" />
                             </template>
-                            {{ isEditMode ? 'Save' : 'Edit' }}
+                            {{ isEditMode ? 'Save changes' : 'Edit' }}
                         </BaseButton>
                         <BaseButton typeButton="danger" :disabled="selectedTask.length === 0"
-                            @click="deleteSelectedTasks">
+                            @click="openDeleteModalMulti">
                             <template #icon>
                                 <Icon icon="mdi:delete-outline" />
                             </template>
@@ -154,17 +154,21 @@
                                 <span class="task-title">{{ task.title }}</span>
                             </td>
                             <td>
-                                <BaseBadge variant="type" v-model="task.type" :editable="isEditMode" />
+                                <BaseBadge variant="type" v-model="task.type" :editable="isEditMode"
+                                    @update:model-value="value => markEdited(task.task_id, 'type', value)" />
                             </td>
                             <td>{{ task.project ? task.project.project_name : '' }}</td>
                             <td>{{ task.assignee ? task.assignee.username : 'Unassigned' }}</td>
                             <td class="bold">{{ task.progress || 0 }}%</td>
                             <td>
-                                <BaseBadge variant="priority" v-model="task.priority" :editable="isEditMode">
+                                <BaseBadge variant="priority" v-model="task.priority" :editable="isEditMode"
+                                    @update:model-value="value => markEdited(task.task_id, 'priority', value)">
                                 </BaseBadge>
                             </td>
                             <td>
-                                <BaseBadge variant="status" v-model="task.status" :editable="isEditMode"></BaseBadge>
+                                <BaseBadge variant="status" v-model="task.status" :editable="isEditMode"
+                                    @update:model-value="value => markEdited(task.task_id, 'status', value)">
+                                </BaseBadge>
                             </td>
 
                             <td>{{ task.due_date }}</td>
@@ -225,7 +229,7 @@ import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
 import { Icon } from '@iconify/vue';
 import '@/assets/css/main.css'
 import { ref, reactive, onMounted, computed } from 'vue';
-import { deleteMultipleTask, searchTask } from '@/services/taskService';
+import { deleteMultipleTask, searchTask, updateMultipleTask } from '@/services/taskService';
 import { deleteTask } from '@/services/taskService';
 import BaseToast from '@/components/ui/BaseToast.vue';
 import router from "@/router";
@@ -256,6 +260,7 @@ const selectedTask = ref([]);
 const isEditMode = ref(false);
 const isFilterExpanded = ref(false);
 const showAdvancedFilters = ref(false);
+const editedTasks = ref({});
 const toastTitle = ref('success');
 const toastMessage = ref('');
 const toastType = ref('success');
@@ -264,6 +269,53 @@ const isLeaving = ref(false);
 const filters = reactive({ ...initialFilters });
 const showDeleteModalMulti = ref(false);
 
+const handleSaveOrEdit = () => {
+    if (!isEditMode.value) {
+        isEditMode.value = true;
+        return;
+    }
+    handleSaveEdit();
+}
+const markEdited = (task_id, field, value) => {
+    if (!editedTasks.value[task_id]) {
+        editedTasks.value[task_id] = {};
+    }
+    editedTasks.value[task_id][field] = normalizeEnum(value);
+}
+const getTasksNeedUpdate = () => {
+    return selectedTask.value
+        .filter(taskId => {
+            return (
+                editedTasks.value[taskId] &&
+                Object.keys(editedTasks.value[taskId]).length > 0
+            );
+        })
+        .map(taskId => ({
+            task_id: taskId,
+            ...editedTasks.value[taskId],
+        }));
+};
+const handleSaveEdit = async () => {
+    try {
+        const payload = getTasksNeedUpdate();
+        console.log(payload);
+        if (payload.length === 0) {
+            handleToast('warning', 'Warning', 'Select tasks to change information');
+            isEditMode.value = !isEditMode.value;
+            return;
+        }
+        await updateMultipleTask(payload);
+        editedTasks.value = {};
+        selectedTask.value = [];
+        isEditMode.value = false;
+        handleToast('success', 'success', `Update tasks successfully!`);
+        fetchTasks();
+
+    } catch (e) {
+        console.log(e);
+        handleToast('error', 'error', 'Fail to update tasks!');
+    }
+}
 const fetchTasks = async (page = 1) => {
     isLoading.value = true;
     try {
@@ -294,17 +346,17 @@ const cancelDelete = () => {
     showDeleteModal.value = false;
     deletingTaskId.value = null;
 }
-const cancelDeleteMulti = ()=>{
+const cancelDeleteMulti = () => {
     showDeleteModalMulti.value = false;
 }
-const confirmDeleteMulti = ()=>{
+const confirmDeleteMulti = () => {
     handleDeleteMultiple();
 }
 const openDeleteModal = (id) => {
     showDeleteModal.value = true;
     deletingTaskId.value = id;
 }
-const openDeleteModalMulti = ()=>{
+const openDeleteModalMulti = () => {
     showDeleteModalMulti.value = true;
 }
 const confirmDelete = async () => {
@@ -377,15 +429,18 @@ const handleDeleteMultiple = async () => {
     try {
 
         await deleteMultipleTask(selectedTask.value);
+        showDeleteModalMulti.value = false;
         handleToast('success', 'success', `Delete ${selectedTask.length} task successfully`);
         selectedTask.value = [];
-        showDeleteModal.value = false;
         fetchTasks();
     } catch (e) {
         console.log(e);
         handleToast('error', 'error', 'Failt to delete tasks');
     }
 }
+const normalizeEnum = (value) => {
+  return value.toLowerCase();
+};
 const toCreatePage = () => {
     router.push('/tasks/create');
 }
