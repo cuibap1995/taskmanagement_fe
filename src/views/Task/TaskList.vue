@@ -84,7 +84,7 @@
                             <Icon icon="mdi:pencil-outline" />
                         </template> {{ isEditMode ? 'Save changes' : 'Edit' }}
                     </BaseButton>
-                    <BaseButton typeButton="danger">
+                    <BaseButton typeButton="danger" :disabled="selectedTask.length <= 1" @click="openDeleteModalMulti">
                         <template #icon>
                             <Icon icon="mdi:delete-outline" />
                         </template> Delete
@@ -96,22 +96,21 @@
         <!-- Table Container -->
         <section class="table-container">
             <div class="pagination-table">
-                <span class="showing-text">Showing <strong>1-10</strong> of 54 tasks</span>
+                <span class="showing-text"><strong>{{ showingText }}</strong></span>
                 <div class="pagination">
-                    <button class="page-btn">
+                    <button class="page-btn" :disabled="pagination.current_page === 1"
+                        @click="pagination.current_page - 1">
                         <Icon icon="mdi:chevron-left" />
                     </button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span class="page-dots">...</span>
-                    <button class="page-btn">11</button>
-                    <button class="page-btn">
+                    <button v-for="(pages, index) in pagination.last_page" class="page-btn" :key="pages"
+                        :class="{ active: pages === pagination.current_page }" @click="fetchTasks(pages)">{{ index + 1
+                        }}</button>
+                    <button class="page-btn" :disabled="pagination.current_page === pagination.last_page"
+                        @click="pagination.current_page + 1">
                         <Icon icon="mdi:chevron-right" />
                     </button>
                 </div>
             </div>
-            <input type="text" id="CheckId" value="" hidden>
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead>
@@ -181,8 +180,9 @@
                         @click="pagination.current_page - 1">
                         <Icon icon="mdi:chevron-left" />
                     </button>
-                    <button v-for="(pages,index) in pagination.last_page" class="page-btn" :key="pages"
-                        :class="{ active: pages === pagination.current_page }" @click="fetchTasks(pages)">{{ index+1 }}</button>
+                    <button v-for="(pages, index) in pagination.last_page" class="page-btn" :key="pages"
+                        :class="{ active: pages === pagination.current_page }" @click="fetchTasks(pages)">{{ index + 1
+                        }}</button>
                     <button class="page-btn" :disabled="pagination.current_page === pagination.last_page"
                         @click="pagination.current_page + 1">
                         <Icon icon="mdi:chevron-right" />
@@ -190,9 +190,14 @@
                 </div>
             </div>
             <BaseConfirmModal v-if="showDeleteModal" mode="delete"
-                message="Are you sure you want to delete this task?\nThis action is permanent and cannot be undone."
+                message="Are you sure you want to delete this task? This action is permanent and cannot be undone."
                 cancelText="Cancel" confirmText="Confirm" title="Delete this task?" @cancel="cancelDelete"
                 @confirm="confirmDelete">
+            </BaseConfirmModal>
+            <BaseConfirmModal v-if="showDeleteModalMulti" mode="delete"
+                message="Are you sure you want to delete these tasks? This action is permanent and cannot be undone."
+                cancelText="Cancel" confirmText="Confirm" title="Delete these task?" @cancel="cancelDeleteMulti"
+                @confirm="confirmDeleteMulti">
             </BaseConfirmModal>
             <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage"
                 :toast-title="toastTitle" @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
@@ -206,7 +211,7 @@ import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
 import { Icon } from '@iconify/vue';
 import '@/assets/css/main.css'
 import { ref, reactive, onMounted, computed } from 'vue';
-import { searchTask } from '@/services/taskService';
+import { deleteMultipleTask, searchTask } from '@/services/taskService';
 import { deleteTask } from '@/services/taskService';
 import BaseToast from '@/components/ui/BaseToast.vue';
 import router from "@/router";
@@ -241,6 +246,7 @@ const toastType = ref('success');
 const isToastDisplay = ref(false);
 const isLeaving = ref(false);
 const filters = reactive({ ...initialFilters });
+const showDeleteModalMulti = ref(false);
 
 const fetchTasks = async (page = 1) => {
     isLoading.value = true;
@@ -272,9 +278,18 @@ const cancelDelete = () => {
     showDeleteModal.value = false;
     deletingTaskId.value = null;
 }
+const cancelDeleteMulti = ()=>{
+    showDeleteModalMulti.value = false;
+}
+const confirmDeleteMulti = ()=>{
+    handleDeleteMultiple();
+}
 const openDeleteModal = (id) => {
     showDeleteModal.value = true;
     deletingTaskId.value = id;
+}
+const openDeleteModalMulti = ()=>{
+    showDeleteModalMulti.value = true;
 }
 const confirmDelete = async () => {
     try {
@@ -341,11 +356,25 @@ const showingText = computed(() => {
 
     return `Showing ${start} - ${end} of ${pagination.value.total}`;
 });
+const handleDeleteMultiple = async () => {
+    if (selectedTask.value.length === 0) return;
+    try {
+
+        await deleteMultipleTask(selectedTask.value);
+        handleToast('success', 'success', `Delete ${selectedTask.length} task successfully`);
+        selectedTask.value = [];
+        showDeleteModal.value = false;
+        fetchTasks();
+    } catch (e) {
+        console.log(e);
+        handleToast('error', 'error', 'Failt to delete tasks');
+    }
+}
 const toCreatePage = () => {
     router.push('/tasks/create');
 }
 const toEditPage = (id) => {
-    router.push(`/tasks/edit/${id}`);
+    router.push(`/tasks/detail/${id}`);
 }
 </script>
 

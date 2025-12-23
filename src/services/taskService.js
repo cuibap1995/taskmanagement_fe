@@ -4,7 +4,8 @@ import {
   updateTaskHttp,
   searchTaskHttp,
   getTaskListHttp,
-  deleteTaskHttp
+  deleteTaskHttp,
+  deleteMultiTaskHttp
 } from "../http/task.http.js";
 
 export const createTask = async (data) => {
@@ -30,4 +31,8 @@ export const getTaskList = async ()=>{
 export const deleteTask = async (id)=>{
   const res = await deleteTaskHttp(id);
   return res.data;
+}
+export const deleteMultipleTask = async (id)=>{
+  const res = await deleteMultiTaskHttp(id);
+  return res.data
 }

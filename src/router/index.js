@@ -29,12 +29,12 @@ const router = createRouter({
           name: "taskscreate",
         },
         {
-          path: "tasks/detail",
+          path: `tasks/detail/:id`,
           component: TaskDetail,
           name: "taskdetail",
         },
         {
-          path: "tasks/edit",
+          path: "tasks/edit/:id",
           component: TaskEdit,
           name: "taskupdate",
         },

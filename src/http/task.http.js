@@ -18,3 +18,8 @@ export const getTaskListHttp = ()=>{
 export const deleteTaskHttp = (id)=>{
   return axios.delete(`/api/tasks/${id}`);
 }
+export const deleteMultiTaskHttp = (id)=>{
+  return axios.post('/api/tasks/delete-multiple',{
+    task_id: id
+  });
+}
