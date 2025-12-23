@@ -33,10 +33,12 @@ const handleSubmit = () => {
 }
 const resetForm = () => {
     Object.keys(form).forEach(key => {
-        form[key] = '';
+        if (key !== 'status' && key !== 'progress' && key !=='created_by') {
+            form[key] = '';
+        }
     })
 }
-defineExpose({resetForm});
+defineExpose({ resetForm });
 </script>
 <template>
     <form class="task_form" @submit.prevent="handleSubmit">

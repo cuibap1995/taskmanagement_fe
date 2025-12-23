@@ -6,15 +6,20 @@ import { ref } from 'vue';
 import '@/assets/css/main.css'
 
 const isSidebarOpen = ref(false);
+const isSidebarCollapsed = ref(false);
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
+
+const toggleCollapse = () => {
+  isSidebarCollapsed.value = !isSidebarCollapsed.value;
+}
 </script>
 <template>
-  <div class="layout">
+  <div class="layout" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
     <appHeader class="area-header" @toggleMenu="toggleSidebar"></appHeader>
-    <appSidebar class="area-sidebar" :class="{ 'open': isSidebarOpen }"></appSidebar>
+    <appSidebar class="area-sidebar" :class="{ 'open': isSidebarOpen }" :collapsed="isSidebarCollapsed" @toggleCollapse="toggleCollapse"></appSidebar>
     <appMain class="area-main">
       <router-view> </router-view>
     </appMain>
@@ -28,6 +33,10 @@ const toggleSidebar = () => {
   grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: var(--header-height) 1fr;
   grid-template-areas: "sidebar header" "sidebar main";
+}
+
+.layout.sidebar-collapsed {
+  grid-template-columns: 70px 1fr;
 }
 
 .area-header {
@@ -45,7 +54,8 @@ const toggleSidebar = () => {
 }
 
 @media (max-width: 768px) {
-  .layout {
+  .layout,
+  .layout.sidebar-collapsed {
     grid-template-columns: 1fr;
     grid-template-areas: "header" "main";
   }

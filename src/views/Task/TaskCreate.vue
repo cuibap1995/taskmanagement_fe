@@ -39,10 +39,6 @@ const handleToast = (type, title, message) => {
 const handleCreate = async (payload) => {
   try {
     await createTask(payload);
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
     handleToast('success', "Success", 'Task created successfully');
     taskFormRef.value?.resetForm();
   } catch (e) {

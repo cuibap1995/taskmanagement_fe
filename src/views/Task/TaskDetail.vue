@@ -3,15 +3,15 @@
         <!-- Title Task -->
         <div class="page-header">
             <div class="page-title-content">
-                <h1 class="title">Design Homepage Mockup</h1>
+                <h1 class="title">{{ task.title }}</h1>
             </div>
             <div class="header-actions">
-                <a href="/tasks/edit">
+                <RouterLink :to="`/tasks/edit/${task.task_id}`">
                     <BaseButton typeButton="primary">
                         <Icon icon="mdi:pencil-outline" />Edit
                     </BaseButton>
-                </a>
-                <BaseButton typeButton="danger">
+                </RouterLink>
+                <BaseButton typeButton="danger" @click="openDeleteModal">
                     <Icon icon="mdi:delete-outline" />Delete
                 </BaseButton>
             </div>
@@ -22,8 +22,7 @@
                 <section class="info-block">
                     <h3 class="block-title">Description</h3>
                     <div class="description-text">
-                        Design a responsive homepage UI for both desktop and mobile, meeting requirements for clean
-                        style and brand guidelines.
+                        {{ task.description ? task.description : `Don't have description for this task` }}
                     </div>
                 </section>
 
@@ -32,24 +31,24 @@
                     <div class="info-grid">
                         <div class="info-group">
                             <span class="info-label">PROJECT</span>
-                            <span class="info-value bold">Website Redesign</span>
+                            <span class="info-value bold">{{ task.project ? task.project.project_name : "" }}</span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">TYPE</span>
                             <span>
-                                <BaseBadge variant="type" value="task"></BaseBadge>
+                                <BaseBadge variant="type" v-model="task.type" :value="task.type"></BaseBadge>
                             </span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">PRIORITY</span>
                             <span>
-                                <BaseBadge variant="priority" value="medium"></BaseBadge>
+                                <BaseBadge variant="priority" v-model="task.priority" value="medium"></BaseBadge>
                             </span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">STATUS</span>
                             <span>
-                                <BaseBadge variant="status" value="working"></BaseBadge>
+                                <BaseBadge variant="status" v-model="task.status" value="working"></BaseBadge>
                             </span>
                         </div>
                     </div>
@@ -60,10 +59,10 @@
                     <div class="progress-wrap">
                         <div class="progress-labels">
                             <span>OVERALL PROGRESS</span>
-                            <span class="percent">65%</span>
+                            <span class="percent">{{ task.progress }}%</span>
                         </div>
                         <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" style="width: 65%"></div>
+                            <div class="progress-bar-fill" :style="{ width: task.progress + '%' }"></div>
                         </div>
                     </div>
                 </section>
@@ -84,7 +83,8 @@
                 <section class="info-block mt-32">
                     <h3 class="block-title">Task Info</h3>
                     <div class="meta-list">
-                        <div class="meta-item"><span>Created by</span> <span class="bold">Admin</span></div>
+                        <div class="meta-item"><span>Created by</span> <span class="bold">{{ task.created_by }}</span>
+                        </div>
                         <div class="meta-item"><span>Updated By</span> <span class="bold">Nguyễn Văn A</span></div>
                     </div>
                 </section>
@@ -92,9 +92,10 @@
                 <section class="info-block mt-32">
                     <h3 class="block-title">Timeline</h3>
                     <div class="meta-list">
-                        <div class="meta-item"><span>Created at</span> <span>2025-12-01</span></div>
-                        <div class="meta-item"><span>Expected Start</span> <span>2025-12-05</span></div>
-                        <div class="meta-item"><span>Due Date</span> <span class="bold">2025-12-28</span></div>
+                        <div class="meta-item"><span>Created at</span> <span>{{ task.created_at }}</span></div>
+                        <div class="meta-item"><span>Expected Start</span> <span>{{ task.expected_start_date }}</span>
+                        </div>
+                        <div class="meta-item"><span>Due Date</span> <span class="bold">{{ task.due_date }}</span></div>
                         <div class="meta-item"><span>Last Updated</span> <span class="italic">2 hours ago</span></div>
                     </div>
                 </section>
@@ -192,6 +193,14 @@
                     </div>
                 </div>
             </div>
+            <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-title="toastTitle"
+                :toast-message="toastMessage" @close="closeToast" :class="{ 'card--leaving': isLeaving }">
+            </BaseToast>
+            <BaseConfirmModal v-if="showDeleteModal" mode="delete"
+                message="Are you sure you want to delete this task? This action is permanent and cannot be undone."
+                cancelText="Cancel" confirmText="Confirm" title="Delete this task?" @cancel="cancelDelete"
+                @confirm="confirmDelete">
+            </BaseConfirmModal>
         </section>
     </div>
 </template>
@@ -199,7 +208,94 @@
 import BaseButton from '@/components/ui/BaseButton.vue';
 import BaseBadge from '@/components/ui/BaseBadge.vue';
 import { Icon } from '@iconify/vue';
-import '@/assets/css/main.css'
+import '@/assets/css/main.css';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { getTaskById } from '@/services/taskService';
+import {deleteTask} from '@/services/taskService';
+import BaseToast from '@/components/ui/BaseToast.vue';
+import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
+
+const route = useRoute();
+const router = useRouter();
+const taskId =  route.params.id;
+const task = ref({});
+const isloading = ref(true);
+const toastType = ref('success');
+const toastTitle = ref('');
+const isToastDisplay = ref(false);
+const isLeaving = ref(false);
+const toastMessage = ref('');
+const showDeleteModal = ref(false);
+const deletingTaskId = ref();
+const isDeleteLoading = ref(false);
+
+const closeToast = () => {
+    isLeaving.value = true;
+    setTimeout(() => {
+        isLeaving.value = false;
+        isToastDisplay.value = false;
+    }, 300);
+}
+const handleToast = (type, title, message) => {
+    isToastDisplay.value = true;
+    toastType.value = type;
+    toastTitle.value = title;
+    toastMessage.value = message
+    setTimeout(() => {
+        closeToast();
+    }, 4000);
+}
+const cancelDelete = () => {
+    showDeleteModal.value = false;
+    deletingTaskId.value = null;
+}
+const openDeleteModal = () => {
+    showDeleteModal.value = true;
+    deletingTaskId.value = taskId;
+}
+const confirmDelete = async () => {
+    try {
+        isDeleteLoading.value = true;
+        showDeleteModal.value = false;
+        console.log(deletingTaskId);
+        const isDeleted = await deleteTask(deletingTaskId.value);
+        console.log(isDeleted);
+        if (isDeleted) {
+            router.push('/tasks');
+            handleToast('success', 'Success', 'Task deleted successfully');
+        }
+    } catch (error) {
+        console.log(error);
+        handleToast('error', "Error", 'Failed to delete task');
+    } finally {
+        deletingTaskId.value = null;
+        isDeleteLoading.value = false;
+    }
+}
+const fetchDetail = async () => {
+    try {
+        const res = await getTaskById(taskId);
+        task.value = res.data;
+        if (task.value) {
+            handleToast('success', 'success', 'Load task successfully');
+        }
+    } catch (e) {
+        console.log(e);
+    } finally {
+        isloading.value = false;
+
+    }
+}
+onMounted(() => {
+    try {
+        fetchDetail();
+
+    } catch (e) {
+        console.log(e);
+        handleToast('error', 'error', 'Fail to load task');
+    }
+})
 </script>
 
 <style scoped>
@@ -330,7 +426,6 @@ import '@/assets/css/main.css'
     color: var(--grey-color);
 }
 
-/* Comment Section */
 .comments-section,
 .activity-section {
     background: transparent;
@@ -356,7 +451,6 @@ import '@/assets/css/main.css'
     background-color: #fff;
     overflow: hidden;
     margin-bottom: 16px;
-    /* Tạo khoảng cách với hàng nút bên dưới */
 }
 
 .textarea-wrapper textarea {
@@ -375,7 +469,6 @@ import '@/assets/css/main.css'
 .footer-buttons {
     display: flex;
     justify-content: flex-end;
-    /* Đẩy 2 nút sang bên phải */
     gap: 12px;
 }
 
@@ -388,7 +481,6 @@ import '@/assets/css/main.css'
 .comment-content-wrapper {
     flex: 1;
     background-color: #f1f3f4;
-    /* Màu xám nhạt cho khung comment */
     padding: 16px;
     border-radius: 10px;
 }
