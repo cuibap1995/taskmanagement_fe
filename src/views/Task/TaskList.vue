@@ -18,99 +18,119 @@
 
         <!-- Panel Filter -->
         <section class="filter-card">
-            <div class="filter-row-search">
-                <div class="form-group">
-                    <label>Task Name</label>
-                    <div class="input-wrapper">
-                        <Icon icon="mdi:magnify" class="input-icon" />
-                        <input type="text" v-model="filters.task_name" placeholder="Search by task name..." />
-                    </div>
+            <div class="filter-header" @click="isFilterExpanded = !isFilterExpanded">
+                <div class="filter-title">
+                    <Icon icon="mdi:filter-variant" />
+                    <span>Bộ lọc tìm kiếm</span>
                 </div>
-                <div class="form-group">
-                    <label>Project Name</label>
-                    <div class="input-wrapper">
-                        <Icon icon="mdi:magnify" class="input-icon" />
-                        <input type="text" v-model="filters.project_name" placeholder="Search by project name..." />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Assignee</label>
-                    <div class="input-wrapper">
-                        <Icon icon="mdi:magnify" class="input-icon" />
-                        <input type="text" v-model="filters.assignee_name" placeholder="Search by assignee..." />
-                    </div>
-                </div>
+                <Icon icon="mdi:chevron-down" class="toggle-icon" :class="{ 'rotated': isFilterExpanded }" />
             </div>
+            <div class="filter-body" :class="{ 'show': isFilterExpanded }">
+                <div class="filter-main-row">
+                    <div class="form-group flex-1">
+                        <label>Task Name</label>
+                        <div class="input-wrapper">
+                            <Icon icon="mdi:magnify" class="input-icon" />
+                            <input type="text" v-model="filters.task_name" placeholder="Search by task name..." />
+                        </div>
+                    </div>
+                    <button class="advanced-toggle-btn" @click="showAdvancedFilters = !showAdvancedFilters">
+                        <Icon icon="mdi:filter-variant" />
+                        Advanced Filters
+                        <Icon :icon="showAdvancedFilters ? 'mdi:chevron-up' : 'mdi:chevron-down'" />
+                    </button>
+                </div>
+                <!-- showAdvancedFilters = true -->
+                <div v-if="showAdvancedFilters" class="advanced-filters">
+                    <div class="filter-row-search-extra">
+                        <div class="form-group">
+                            <label>Project Name</label>
+                            <div class="input-wrapper">
+                                <Icon icon="mdi:magnify" class="input-icon" />
+                                <input type="text" v-model="filters.project_name"
+                                    placeholder="Search by project name..." />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Assignee</label>
+                            <div class="input-wrapper">
+                                <Icon icon="mdi:magnify" class="input-icon" />
+                                <input type="text" v-model="filters.assignee_name"
+                                    placeholder="Search by assignee..." />
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="filter-row-select">
-                <select v-model="filters.type">
-                    <option value="">All Type</option>
-                    <option value="task">Task</option>
-                    <option value="feature">Feature</option>
-                    <option value="bug">Bug</option>
-                    <option value="enhancement">Enhancement</option>
-                </select>
-                <select v-model="filters.priority">
-                    <option value="">All Priority</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                </select>
-                <select v-model="filters.status">
-                    <option value="">All Status</option>
-                    <option value="open">Open</option>
-                    <option value="working">Working</option>
-                    <option value="pending">Pending Review</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
+                    <!-- dropdown filters -->
+                    <div class="filter-row-select">
+                        <select v-model="filters.type">
+                            <option value="">All Type</option>
+                            <option value="task">Task</option>
+                            <option value="feature">Feature</option>
+                            <option value="bug">Bug</option>
+                            <option value="enhancement">Enhancement</option>
+                        </select>
+                        <select v-model="filters.priority">
+                            <option value="">All Priority</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                        <select v-model="filters.status">
+                            <option value="">All Status</option>
+                            <option value="open">Open</option>
+                            <option value="working">Working</option>
+                            <option value="pending">Pending Review</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
 
-            <!-- Bulk Action -->
-            <div class="filter-row-actions">
-                <span class="selection-text">No tasks selected</span>
-                <div class="button-group">
-                    <BaseButton typeButton="primary" @click="fetchTasks">
-                        <template #icon>
-                            <Icon icon="mdi:magnify" />
-                        </template> Search
-                    </BaseButton>
-                    <BaseButton typeButton="outline" @click="clearFilter">
-                        <template #icon>
-                            <Icon icon="mdi:refresh" />
-                        </template> Clear Filter
-                    </BaseButton>
-                    <BaseButton typeButton="outline" class="info-btn" @click="isEditMode = !isEditMode">
-                        <template #icon>
-                            <Icon icon="mdi:pencil-outline" />
-                        </template> {{ isEditMode ? 'Save changes' : 'Edit' }}
-                    </BaseButton>
-                    <BaseButton typeButton="danger">
-                        <template #icon>
-                            <Icon icon="mdi:delete-outline" />
-                        </template> Delete
-                    </BaseButton>
+                <!-- Bulk Action -->
+                <div class="filter-row-actions">
+                    <div class="bulk-info">
+                        <span class="selection-text" :class="{ 'has-selection': selectedTask.length > 0 }">
+                            <Icon v-if="selectedTask.length > 0" icon="mdi:check-circle" />
+                            {{ selectedTask.length > 0 ? `${selectedTask.length} task(s) selected` : 'No tasks selected'
+                            }}
+                        </span>
+                    </div>
+
+                    <div class="button-group">
+                        <BaseButton typeButton="primary" @click="fetchTasks">
+                            <template #icon>
+                                <Icon icon="mdi:magnify" />
+                            </template>
+                            Search
+                        </BaseButton>
+                        <BaseButton typeButton="outline" @click="clearFilter">
+                            <template #icon>
+                                <Icon icon="mdi:refresh" />
+                            </template>
+                            Clear Filter
+                        </BaseButton>
+                        <BaseButton typeButton="outline" :disabled="selectedTask.length === 0"
+                            @click="isEditMode = !isEditMode">
+                            <template #icon>
+                                <Icon :icon="isEditMode ? 'mdi:content-save' : 'mdi:pencil-outline'" />
+                            </template>
+                            {{ isEditMode ? 'Save' : 'Edit' }}
+                        </BaseButton>
+                        <BaseButton typeButton="danger" :disabled="selectedTask.length === 0"
+                            @click="deleteSelectedTasks">
+                            <template #icon>
+                                <Icon icon="mdi:delete-outline" />
+                            </template>
+                            Delete
+                        </BaseButton>
+
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Table Container -->
         <section class="table-container">
-            <div class="pagination-table">
-                <span class="showing-text">Showing <strong>1-10</strong> of 54 tasks</span>
-                <div class="pagination">
-                    <button class="page-btn">
-                        <Icon icon="mdi:chevron-left" />
-                    </button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span class="page-dots">...</span>
-                    <button class="page-btn">11</button>
-                    <button class="page-btn">
-                        <Icon icon="mdi:chevron-right" />
-                    </button>
-                </div>
-            </div>
             <input type="text" id="CheckId" value="" hidden>
             <div class="table-wrapper">
                 <table class="data-table">
@@ -226,6 +246,13 @@ const showDeleteModal = ref(false);
 const deletingTaskId = ref(null);
 const selectedTask = ref([]);
 const isEditMode = ref(false);
+const isFilterExpanded = ref(false);
+const showAdvancedFilters = ref(false);
+
+const isopenBread = [
+    { label: 'Tasks', to: '/tasks' },
+    { label: 'Create New Task' }
+]
 
 const filters = reactive({ ...initialFilters });
 
@@ -315,27 +342,54 @@ const toEditPage = (id) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 0;
 }
 
 .title {
-    font-size: 48px;
+    font-size: 32px;
     font-weight: 700;
     margin: 0;
     color: var(--text-color);
 }
 
 .subtitle {
-    font-size: 16px;
+    font-size: 12px;
     color: var(--grey-color);
+    margin-top: 0;
+    margin-bottom: 12px;
 }
 
 /* Panel Filter */
+.filter-header {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.filter-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.toggle-icon.rotated {
+    transform: rotate(180deg);
+}
+
 .filter-card {
     background: var(--white-color);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 24px;
+    padding: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
@@ -404,23 +458,106 @@ select:focus {
     color: var(--primary-color);
 }
 
+.filter-main-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.filter-main-row .flex-1 {
+    flex: 1;
+}
+
+.advanced-toggle-btn {
+    height: 40px;
+    padding: 0 16px;
+    background: var(--white-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.advanced-toggle-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.advanced-filters {
+    animation: slideDown 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.filter-row-search-extra {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.filter-row-select {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
 .filter-row-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 20px;
+    padding-top: 15px;
     border-top: 1px solid var(--border-color);
+    margin-top: 10px;
 }
 
-.selection-text {
-    color: var(--grey-color);
-    font-size: 14px;
-    font-style: italic;
-}
-
-.button-group {
+.bulk-info {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 20px;
+}
+
+.bulk-action-buttons {
+    display: flex;
+    gap: 12px;
+    padding-left: 15px;
+    border-left: 1px solid var(--border-color);
+}
+
+.btn-action-inline {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-action-inline.edit {
+    color: #0288d1;
+}
+
+.btn-action-inline.edit:hover {
+    background-color: #e1f5fe;
+}
+
+.btn-action-inline.delete {
+    color: var(--error-color);
+}
+
+.btn-action-inline.delete:hover {
+    background-color: #fbe9e7;
 }
 
 /* Table Container */
@@ -431,6 +568,30 @@ select:focus {
     margin-top: 24px;
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.selection-text {
+    font-size: 14px;
+    color: var(--grey-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.selection-text.has-selection {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.button-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.button-group button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .pagination-table {
@@ -543,5 +704,64 @@ select:focus {
 
 .icon-btn:hover {
     background-color: #f1f5f9;
+}
+
+@media (max-width: 768px) {
+    .filter-header {
+        display: flex;
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+
+    .filter-body {
+        display: none;
+        padding-top: 15px;
+        border-top: 1px solid var(--border-color);
+        animation: slideDown 0.3s ease;
+    }
+
+    .filter-body.show {
+        display: block;
+    }
+
+    .filter-row-search,
+    .filter-row-select {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .filter-row-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .bulk-action-bar {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .bulk-action-bar .button-group {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .bulk-action-bar .button-group>* {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>

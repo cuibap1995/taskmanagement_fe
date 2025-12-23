@@ -29,29 +29,22 @@
 </template>
 <script setup>
 import { Icon } from "@iconify/vue";
+import '@/assets/css/main.css';
 </script>
 <style scoped>
 nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-
-  width: var(--sidebar-width);
-  height: 100vh;
-
+  width: 100%;
+  height: 100%;
   font-weight: 700;
-  z-index: 1000;
+  background-color: var(--background-color);
 }
 
 .container {
-  background-color: #0f172a;
   color: white;
-
   width: 100%;
   height: 100%;
-
-  padding: 20px 16px;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 /* LOGO */
@@ -59,8 +52,9 @@ nav {
   display: flex;
   align-items: center;
   gap: 8px;
-
-  margin-bottom: 32px;
+  padding: 0 16px;
+  height: var(--header-height); 
+  box-sizing: border-box;
 }
 
 .logoText {
@@ -85,10 +79,8 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 12px;
-
-  padding: 0;
+  padding: 0 16px;
   margin: 0;
-
   list-style: none;
 }
 
@@ -102,11 +94,9 @@ nav {
 .redirectATag {
   display: flex;
   align-items: center;
-  gap: 13px;
-
+  gap: 14px;
   width: 100%;
-  padding: 10px 3px;
-
+  padding: 10px 0;
   color: white;
   text-decoration: none;
   border-radius: 6px;

@@ -5,14 +5,10 @@
 </template>
 <style scoped>
 .main {
-  position: fixed;
-
-  top: var(--header-height);
-  left: var(--sidebar-width);
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: #f5f7fa;
-  overflow-y: auto;
-  padding: 10px 24px;
+  padding: 12px 24px;
+  box-sizing: border-box;
 }
 </style>

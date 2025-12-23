@@ -3,9 +3,7 @@
 }
 :root {
   --sidebar-width: 260px;
-  --header-height: 65px;
-  --sidebar-width: 260px;
-  --header-height: 65px;
+  --header-height: 54px;
   --primary-color: #00BFA5;
   --background-color: #0F172A;
   --background-active: #1E293B;
@@ -16,19 +14,4 @@
   --success-color: #4CAF50;
   --warning-color: #FF9800;
   --error-color: #F44336;
-}
-@media (max-width: 1024px) {
-  :root {
-    --sidebar-width: 80px;
-  }
-
-  .logo p,
-  .redirectATag span {
-    display: none;
-  }
-}
-@media (max-width: 768px) {
-  :root {
-    --sidebar-width: 0px;
-  }
 }
