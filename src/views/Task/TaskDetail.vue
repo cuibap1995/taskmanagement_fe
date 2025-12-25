@@ -217,7 +217,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { getTaskById } from '@/services/taskService';
 import { deleteTask } from '@/services/taskService';
 import BaseToast from '@/components/ui/BaseToast.vue';
-import {formatDate} from '@/assets/js/dateFormat';
+import { formatDate } from '@/assets/js/dateFormat';
 import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
 
 const route = useRoute();

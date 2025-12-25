@@ -26,7 +26,7 @@ const form = reactive({
     project_id: 11,
     assignee_id: null,
     created_by: 1,
-    updated_by:1
+    updated_by: 1
 });
 
 const handleSubmit = () => {

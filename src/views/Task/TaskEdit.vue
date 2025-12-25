@@ -4,7 +4,7 @@
     <small>Update task information and track progress</small>
   </div>
 
-  <TaskForm  mode="update" :data="formData" @submit="handleSubmit" @cancel="handleCancel" @delete="openDeleteModal">
+  <TaskForm mode="update" :data="formData" @submit="handleSubmit" @cancel="handleCancel" @delete="openDeleteModal">
   </TaskForm>
   <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage" :toast-title="toastTitle"
     @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
