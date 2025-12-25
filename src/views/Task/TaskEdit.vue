@@ -4,7 +4,7 @@
     <small>Update task information and track progress</small>
   </div>
 
-  <TaskForm mode="update" :data="formData" @submit="handleSubmit" @cancel="handleCancel" @delete="openDeleteModal">
+  <TaskForm mode="update" :data="formData" @submit="handleUpdate" @cancel="handleCancel" @delete="openDeleteModal">
   </TaskForm>
   <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage" :toast-title="toastTitle"
     @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
@@ -63,7 +63,7 @@ const closeToast = () => {
     isToastDisplay.value = false;
   }, 300);
 }
-const handleSubmit = async (payload) => {
+const handleUpdate = async (payload) => {
   try {
     await updateTask(id, payload);
     handleToast('success', 'success', "Task updated successfully");
