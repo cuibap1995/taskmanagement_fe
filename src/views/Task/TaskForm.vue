@@ -3,7 +3,7 @@ import BaseButton from "@/components/ui/BaseButton.vue";
 import { Icon } from "@iconify/vue";
 import { reactive, watch, ref } from "vue";
 import { validateTask } from "@/validations/Task/task.validate";
-import {MAX_TASK_DATE} from '@/constants/date.const';
+import { MAX_TASK_DATE } from '@/constants/date.const';
 const prop = defineProps({
     mode: {
         type: String,
@@ -161,14 +161,16 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 </div>
                 <div class="field" :class="{ error: err.field === 'expected_start_date' }">
                     <label for="eStartDate">Expected Start Date</label>
-                    <input type="date" id="expected_start_date" v-model="form.expected_start_date" name="eStartDate" :max="MAX_TASK_DATE"/>
+                    <input type="date" id="expected_start_date" v-model="form.expected_start_date" name="eStartDate"
+                        :max="MAX_TASK_DATE" />
                     <small v-if="err.field === 'expected_start_date'" class="error-text">
                         {{ err.message }}
                     </small>
                 </div>
                 <div class="field" :class="{ error: err.field === 'expected_end_date' }">
                     <label for="eEndDate">Expected End Date</label>
-                    <input type="date" id="expected_end_date" v-model="form.expected_end_date" name="eEndDate":max="MAX_TASK_DATE" />
+                    <input type="date" id="expected_end_date" v-model="form.expected_end_date" name="eEndDate"
+                        :max="MAX_TASK_DATE" />
                     <small v-if="err.field === 'expected_end_date'" class="error-text">
                         {{ err.message }}
                     </small>
