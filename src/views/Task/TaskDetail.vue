@@ -92,10 +92,13 @@
                 <section class="info-block mt-32">
                     <h3 class="block-title">Timeline</h3>
                     <div class="meta-list">
-                        <div class="meta-item"><span>Created at</span> <span>{{ task.created_at }}</span></div>
-                        <div class="meta-item"><span>Expected Start</span> <span>{{ task.expected_start_date }}</span>
+                        <div class="meta-item"><span>Created at</span> <span>{{ formatDate(task.created_at) }}</span>
                         </div>
-                        <div class="meta-item"><span>Due Date</span> <span class="bold">{{ task.due_date }}</span></div>
+                        <div class="meta-item"><span>Expected Start</span> <span>{{
+                            formatDate(task.expected_start_date) }}</span>
+                        </div>
+                        <div class="meta-item"><span>Due Date</span> <span class="bold">{{ formatDate(task.due_date)
+                                }}</span></div>
                         <div class="meta-item"><span>Last Updated</span> <span class="italic">2 hours ago</span></div>
                     </div>
                 </section>
@@ -212,13 +215,14 @@ import '@/assets/css/main.css';
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getTaskById } from '@/services/taskService';
-import {deleteTask} from '@/services/taskService';
+import { deleteTask } from '@/services/taskService';
 import BaseToast from '@/components/ui/BaseToast.vue';
+import {formatDate} from '@/assets/js/dateFormat';
 import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
 
 const route = useRoute();
 const router = useRouter();
-const taskId =  route.params.id;
+const taskId = route.params.id;
 const task = ref({});
 const isloading = ref(true);
 const toastType = ref('success');
@@ -258,9 +262,7 @@ const confirmDelete = async () => {
     try {
         isDeleteLoading.value = true;
         showDeleteModal.value = false;
-        console.log(deletingTaskId);
         const isDeleted = await deleteTask(deletingTaskId.value);
-        console.log(isDeleted);
         if (isDeleted) {
             router.push('/tasks');
             handleToast('success', 'Success', 'Task deleted successfully');

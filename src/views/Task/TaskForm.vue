@@ -1,7 +1,7 @@
 <script setup>
 import BaseButton from "@/components/ui/BaseButton.vue";
 import { Icon } from "@iconify/vue";
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 const prop = defineProps({
     mode: {
         type: String,
@@ -25,7 +25,8 @@ const form = reactive({
     due_date: null,
     project_id: 11,
     assignee_id: null,
-    created_by: 1
+    created_by: 1,
+    updated_by:1
 });
 
 const handleSubmit = () => {
@@ -33,12 +34,31 @@ const handleSubmit = () => {
 }
 const resetForm = () => {
     Object.keys(form).forEach(key => {
-        if (key !== 'status' && key !== 'progress' && key !=='created_by') {
+        if (key !== 'status' && key !== 'progress' && key !== 'created_by') {
             form[key] = '';
         }
     })
 }
 defineExpose({ resetForm });
+watch(() => [prop.data, prop.mode], ([data, mode]) => {
+    if (mode === 'update' && data && Object.keys(data).length) {
+        form.title = data.title ?? '';
+        form.description = data.description ?? '';
+        form.assignee_id = data.assignee_id ?? 1;
+        form.created_by = data.created_by ?? 1;
+        form.due_date = data.due_date ?? '';
+        form.priority = data.priority ?? 'medium';
+        form.expected_end_date = data.expected_end_date ?? '';
+        form.expected_start_date = data.expected_start_date ?? '';
+        form.progress = data.progress ?? 0;
+        form.status = data.status;
+        form.project_id = data.project_id ?? 11;
+        form.type = data.type ?? '';
+    }
+    if (mode === 'create') {
+        resetForm();
+    }
+}, { immediate: true });
 </script>
 <template>
     <form class="task_form" @submit.prevent="handleSubmit">
@@ -83,7 +103,7 @@ defineExpose({ resetForm });
                 </div>
                 <div class="field" v-if="prop.mode === 'update'">
                     <label for="status">Status <span style="color: red">*</span></label>
-                    <select name="status" id="status" v-model.number="form.status" required>
+                    <select name="status" id="status" v-model="form.status" required>
                         <option value="working">Working</option>
                         <option value="pending review">Pending Review</option>
                         <option value="open" selected>Open</option>

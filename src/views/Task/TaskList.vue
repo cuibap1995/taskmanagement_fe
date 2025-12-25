@@ -298,9 +298,8 @@ const getTasksNeedUpdate = () => {
 const handleSaveEdit = async () => {
     try {
         const payload = getTasksNeedUpdate();
-        console.log(payload);
         if (payload.length === 0) {
-            handleToast('warning', 'Warning', 'Select tasks to change information');
+            handleToast('warning', 'Warning', 'Select field of the task to change');
             isEditMode.value = !isEditMode.value;
             return;
         }
@@ -362,8 +361,9 @@ const openDeleteModalMulti = () => {
 const confirmDelete = async () => {
     try {
         isLoading.value = true;
-        showDeleteModal.value = false;
+
         const isDeleted = await deleteTask(deletingTaskId.value);
+        showDeleteModal.value = false;
         if (isDeleted) {
             await fetchTasks();
             handleToast('success', 'Success', 'Task deleted successfully');
@@ -439,7 +439,7 @@ const handleDeleteMultiple = async () => {
     }
 }
 const normalizeEnum = (value) => {
-  return value.toLowerCase();
+    return value.toLowerCase();
 };
 const toCreatePage = () => {
     router.push('/tasks/create');
@@ -656,6 +656,7 @@ select:focus {
     overflow: hidden;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
+
 .selection-text {
     font-size: 14px;
     color: var(--grey-color);
@@ -794,6 +795,7 @@ select:focus {
 }
 
 @media (max-width: 768px) {
+
     .filter-row-search,
     .filter-row-select {
         grid-template-columns: 1fr;
