@@ -4,6 +4,7 @@ import { Icon } from "@iconify/vue";
 import { reactive, watch, ref } from "vue";
 import { validateTask } from "@/validations/Task/task.validate";
 import { MAX_TASK_DATE } from '@/constants/date.const';
+import BaseToast from '@/components/ui/BaseToast.vue';
 const prop = defineProps({
     mode: {
         type: String,
@@ -31,13 +32,34 @@ const form = reactive({
     created_by: 1,
     updated_by: 1
 });
-
+const isToastDisplay = ref(false);
+const isLeaving = ref(false);
+const toastTitle = ref('');
+const toastType = ref('success');
+const toastMessage = ref('');
+const closeToast = () => {
+    isLeaving.value = true;
+    setTimeout(() => {
+        isLeaving.value = false;
+        isToastDisplay.value = false;
+    }, 300);
+}
+const handleToast = (type, title, message) => {
+    isToastDisplay.value = true;
+    toastType.value = type;
+    toastTitle.value = title;
+    toastMessage.value = message
+    setTimeout(() => {
+        closeToast();
+    }, 2000);
+}
 const handleSubmit = () => {
     const result = validateTask(form, prop.mode);
     console.log(result);
     if (!result.valid) {
         err.value.field = result.field;
         err.value.message = result.message;
+        handleToast('error', 'error', `${err.value.message} `)
         return;
     }
     try {
@@ -84,7 +106,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 <div class="field full" :class="{ error: err.field === 'title' }">
                     <label for="title_input">Title <span style="color: red">*</span></label>
                     <input type="text" placeholder="Ex: Design Mockup..." id="title_input" v-model="form.title"
-                        name="title" />
+                        name="title" ref="fieldRefs.title" />
                     <small v-if="err.field === 'title'" class="error-text">
                         {{ err.message }}
                     </small>
@@ -92,7 +114,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 </div>
                 <div class="field" :class="{ error: err.field === 'type' }">
                     <label for="type">Type <span style="color: red">*</span></label>
-                    <select name="type" id="type" v-model="form.type">
+                    <select name="type" id="type" v-model="form.type" ref="fieldRefs.type">
                         <option value="task" selected>Task</option>
                         <option value="bug">Bug</option>
                         <option value="feature">Feature</option>
@@ -104,7 +126,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 </div>
                 <div class="field" :class="{ error: err.field === 'priority' }">
                     <label for="priority">Priority <span style="color: red">*</span></label>
-                    <select name="priority" v-model="form.priority" id="priority">
+                    <select name="priority" v-model="form.priority" id="priority" ref="fieldRefs.priority">
                         <option value="high">High</option>
                         <option value="medium" selected>Medium</option>
                         <option value="low">Low</option>
@@ -115,7 +137,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 </div>
                 <div class="field" :class="{ error: err.field === 'project_id' }">
                     <label for="project">Project <span style="color: red">*</span></label>
-                    <select name="project_id" id="project" v-model="form.project_id">
+                    <select name="project_id" id="project" v-model="form.project_id" ref="fieldRefs.project_id">
                         <option value="" disabled selected>Select a Project</option>
                         <option value=11>Project 1</option>
                     </select>
@@ -129,19 +151,21 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                         <option value="" disabled selected>Not assigneed</option>
                     </select>
                 </div>
-                <div class="field" v-if="prop.mode === 'update'" :class="{ error: err.field === 'status' }">
+                <div class="field" v-if="prop.mode === 'update'" :class="{ error: err.field === 'status' }"
+                    ref="fieldRefs.status">
                     <label for="status">Status <span style="color: red">*</span></label>
                     <select name="status" id="status" v-model="form.status">
+                        <option value="open" selected>Open</option>
                         <option value="working">Working</option>
                         <option value="pending review">Pending Review</option>
-                        <option value="open" selected>Open</option>
                         <option value="completed">Completed</option>
                     </select>
                     <small v-if="err.field === 'status'" class="error-text">
                         {{ err.message }}
                     </small>
                 </div>
-                <div class="field" v-if="prop.mode === 'update'" :class="{ error: err.field === 'progress' }">
+                <div class="field" v-if="prop.mode === 'update'" :class="{ error: err.field === 'progress' }"
+                    ref="fieldRefs.progress">
                     <label for="progress">Progress</label>
                     <input type="number" name="progress" v-model="form.progress" />
                     <small v-if="err.field === 'progress'" class="error-text">
@@ -154,7 +178,8 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
             <div class="grid">
                 <div class="field full" :class="{ error: err.field === 'due_date' }">
                     <label for="due">Due Date <span style="color: red;">*</span></label>
-                    <input type="date" id="due" name="due_date" v-model="form.due_date" :max="MAX_TASK_DATE">
+                    <input type="date" id="due" name="due_date" v-model="form.due_date" :max="MAX_TASK_DATE"
+                        ref="fieldRefs.due_date">
                     <small v-if="err.field === 'due_date'" class="error-text">
                         {{ err.message }}
                     </small>
@@ -162,7 +187,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 <div class="field" :class="{ error: err.field === 'expected_start_date' }">
                     <label for="eStartDate">Expected Start Date</label>
                     <input type="date" id="expected_start_date" v-model="form.expected_start_date" name="eStartDate"
-                        :max="MAX_TASK_DATE" />
+                        :max="MAX_TASK_DATE" ref="fieldRefs.expected_start_date" />
                     <small v-if="err.field === 'expected_start_date'" class="error-text">
                         {{ err.message }}
                     </small>
@@ -170,7 +195,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 <div class="field" :class="{ error: err.field === 'expected_end_date' }">
                     <label for="eEndDate">Expected End Date</label>
                     <input type="date" id="expected_end_date" v-model="form.expected_end_date" name="eEndDate"
-                        :max="MAX_TASK_DATE" />
+                        :max="MAX_TASK_DATE" ref="fieldRefs.expected_end_date" />
                     <small v-if="err.field === 'expected_end_date'" class="error-text">
                         {{ err.message }}
                     </small>
@@ -181,7 +206,8 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
             <div class="grid">
                 <div class="field full" :class="{ error: err.field === 'description' }">
                     <label for="description">Description</label>
-                    <textarea name="description" v-model="form.description" id="description"></textarea>
+                    <textarea name="description" v-model="form.description" id="description"
+                        ref="fieldRefs.description"></textarea>
                     <small v-if="err.field === 'description'" class="error-text">
                         {{ err.message }}
                     </small>
@@ -213,6 +239,8 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                     </BaseButton>
                 </div>
             </div>
+            <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage"
+                :toast-title="toastTitle" @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
         </section>
     </form>
 </template>

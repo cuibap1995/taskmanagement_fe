@@ -39,6 +39,5 @@ export const deleteMultipleTask = async (id) => {
 };
 export const updateMultipleTask = async (payload) => {
   const res = await updateMultiTaskHttp(payload);
-  console.log(res);
   return res.data;
 };

@@ -243,7 +243,7 @@ const initialFilters = {
     priority: '',
     status: '',
     page: 1,
-    per_page: 1
+    per_page: 10
 };
 
 const tasks = ref([]);
@@ -251,7 +251,7 @@ const isLoading = ref(false);
 const pagination = ref({
     current_page: 1,
     last_page: 1,
-    per_page: 1,
+    per_page: 10,
     total: 0
 });
 const showDeleteModal = ref(false);

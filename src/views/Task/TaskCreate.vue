@@ -11,9 +11,11 @@
 <script setup>
 import { createTask } from "@/services/taskService";
 import TaskForm from "./TaskForm.vue";
-import router from "@/router";
 import BaseToast from '@/components/ui/BaseToast.vue';
 import { ref } from 'vue';
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const taskFormRef = ref(null);
 const isToastDisplay = ref(false);
 const isLeaving = ref(false);
@@ -40,7 +42,9 @@ const handleCreate = async (payload) => {
   try {
     await createTask(payload);
     handleToast('success', "Success", 'Task created successfully');
-    taskFormRef.value?.resetForm();
+    setTimeout(() => {
+      router.back();
+    }, 3000);
   } catch (e) {
     handleToast('error', "Error", 'Failed to create task');
     console.log(e);
