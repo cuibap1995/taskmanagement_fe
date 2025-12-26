@@ -137,7 +137,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                     <label for="project">Project <span style="color: red">*</span></label>
                     <select name="project_id" id="project" v-model="form.project_id" ref="fieldRefs.project_id">
                         <option value="" disabled selected>Select a Project</option>
-                        <option value=11>Project 1</option>
+                        <option value=1>Project 1</option>
                     </select>
                     <small v-if="err.field === 'project_id'" class="error-text">
                         {{ err.message }}
