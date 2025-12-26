@@ -262,11 +262,11 @@ const confirmDelete = async () => {
     try {
         isDeleteLoading.value = true;
         showDeleteModal.value = false;
-        const isDeleted = await deleteTask(deletingTaskId.value);
-        if (isDeleted) {
-            router.push('/tasks');
-            handleToast('success', 'Success', 'Task deleted successfully');
-        }
+        await deleteTask(deletingTaskId.value);
+        handleToast('success', 'Success', 'Task deleted successfully');
+        setTimeout(() => {
+            router.back();
+        }, 2000);
     } catch (error) {
         console.log(error);
         handleToast('error', "Error", 'Failed to delete task');

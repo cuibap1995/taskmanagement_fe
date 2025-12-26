@@ -223,7 +223,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
             </div>
             <div class="flex-btn-btn" v-if="prop.mode === 'update'">
                 <div class="deleteBtn">
-                    <BaseButton type-button="danger" @click="emit('delete')">
+                    <BaseButton type-button="danger" @click.prevent="emit('delete')">
                         <Icon icon="gravity-ui:trash-bin" />Delete
                     </BaseButton>
                 </div>
@@ -232,7 +232,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                         <Icon icon="charm:cross" />
                         Cancel
                     </BaseButton>
-                    <BaseButton type-button="primary">
+                    <BaseButton type-button="primary" type="submit">
                         <Icon icon="charm:tick" />Update
                     </BaseButton>
                 </div>

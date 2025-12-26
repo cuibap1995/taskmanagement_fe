@@ -66,7 +66,9 @@ const handleUpdate = async (payload) => {
   try {
     await updateTask(id, payload);
     handleToast('success', 'success', "Task updated successfully");
-    router.back();
+    setTimeout(() => {
+      router.back();
+    }, 1300);
   } catch (e) {
     console.log(e);
     handleToast('error', 'error', 'Fail to update task');
@@ -87,11 +89,11 @@ const confirmDelete = async () => {
   try {
     isDeleteLoading.value = true;
     showDeleteModal.value = false;
-    const isDeleted = await deleteTask(deletingTaskId.value);
-    if (isDeleted) {
+    await deleteTask(deletingTaskId.value);
+    handleToast('success', 'Success', 'Task deleted successfully');
+    setTimeout(() => {
       router.push('/tasks');
-      handleToast('success', 'Success', 'Task deleted successfully');
-    }
+    }, 1300);
   } catch (error) {
     console.log(error);
     handleToast('error', "Error", 'Failed to delete task');
