@@ -154,19 +154,19 @@
                                 <span class="task-title">{{ task.title }}</span>
                             </td>
                             <td>
-                                <BaseBadge variant="type" v-model="task.type" :editable="isEditMode"
+                                <BaseBadge variant="type" :modelValue="task.type" :editable="isEditMode"
                                     @update:model-value="value => markEdited(task.task_id, 'type', value)" />
                             </td>
                             <td>{{ task.project ? task.project.project_name : '' }}</td>
                             <td>{{ task.assignee ? task.assignee.username : 'Unassigned' }}</td>
                             <td class="bold">{{ task.progress || 0 }}%</td>
                             <td>
-                                <BaseBadge variant="priority" v-model="task.priority" :editable="isEditMode"
+                                <BaseBadge variant="priority" :modelValue="task.priority" :editable="isEditMode"
                                     @update:model-value="value => markEdited(task.task_id, 'priority', value)">
                                 </BaseBadge>
                             </td>
                             <td>
-                                <BaseBadge variant="status" v-model="task.status" :editable="isEditMode"
+                                <BaseBadge variant="status" :modelValue="task.status" :editable="isEditMode"
                                     @update:model-value="value => markEdited(task.task_id, 'status', value)">
                                 </BaseBadge>
                             </td>
@@ -280,7 +280,11 @@ const markEdited = (task_id, field, value) => {
     if (!editedTasks.value[task_id]) {
         editedTasks.value[task_id] = {};
     }
-    editedTasks.value[task_id][field] = normalizeEnum(value);
+    editedTasks.value[task_id][field] = value;
+    const task = tasks.value.find(t => t.task_id === task_id);
+    if (task) {
+        task[field] = value;
+    }
 }
 const getTasksNeedUpdate = () => {
     return selectedTask.value
@@ -438,9 +442,6 @@ const handleDeleteMultiple = async () => {
         handleToast('error', 'error', 'Failt to delete tasks');
     }
 }
-const normalizeEnum = (value) => {
-    return value.toLowerCase();
-};
 const toCreatePage = () => {
     router.push('/tasks/create');
 }

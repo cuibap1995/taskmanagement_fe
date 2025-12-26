@@ -1,100 +1,114 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { Icon } from '@iconify/vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { Icon } from '@iconify/vue'
+import { TASK_STATUS, TASK_PRIORITY, TASK_TYPE } from '@/constants/taskEnum';
 
 const props = defineProps({
-    variant: {
-        type: String,
-        required: true // status | priority | type
-    },
-    modelValue: {
-        type: String, 
-        required: true
-    },
-    editable: {
-        type: Boolean,
-        default: false
+    variant: { type: String, required: true }, // status | priority | type
+    modelValue: { type: Number, required: true },
+    editable: { type: Boolean, default: false }
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+const isOpen = ref(false)
+const containerRef = ref(null)
+
+const enumMap = {
+  status: TASK_STATUS,
+  priority: TASK_PRIORITY,
+  type: TASK_TYPE
+};
+
+const currentOptions = computed(() => {
+    const options = enumMap[props.variant]
+    if(Array.isArray(options)) {
+        return options;
     }
-});
-
-const emit = defineEmits(['update:modelValue']);
-const isDropdownOpen = ref(false);
-const dropdownRef = ref(null);
-const badgeRef = ref(null);
-
-const options = {
-    status: [
-        { id: 'Open', label: 'Open', color: '#64748B', bgColor: '#ECEFF1' },
-        { id: 'Working', label: 'Working', color: '#3B82F6', bgColor: '#E3F2FD' },
-        { id: 'Pending Review', label: 'Pending Review', color: '#F59E0B', bgColor: '#FFF8E1' },
-        { id: 'Completed', label: 'Completed', color: '#10B981', bgColor: '#E0F2F1' }
-    ],
-    priority: [
-        { id: 'High', label: 'High', color: '#EF4444', bgColor: '#FDECEA' },
-        { id: 'Medium', label: 'Medium', color: '#F97316', bgColor: '#FFF3E0' },
-        { id: 'Low', label: 'Low', color: '#84CC16', bgColor: '#E8F5E9' }
-    ],
-    type: [
-        { id: 'Task', label: 'Task', color: '#64748B', bgColor: '#ECEFF1' },
-        { id: 'Feature', label: 'Feature', color: '#1D4ED8', bgColor: '#E3F2FD' },
-        { id: 'Bug', label: 'Bug', color: '#DC2626', bgColor: '#FCE4EC' },
-        { id: 'Enhancement', label: 'Enhancement', color: '#6D28D9', bgColor: '#EDE7F6' }
-    ]
-};
-
-const currentOptions = computed(() => options[props.variant] || []);
-
-
-const currentOption = computed(() => {
-    const found = currentOptions.value.find(opt =>
-        opt.id.toLowerCase() === props.modelValue?.toLowerCase()
-    );
-    return found || { label: props.modelValue || 'Unknown', color: '#333', bgColor: '#eee' };
-});
-
-const toggleDropdown = () => {
-    if (props.editable) isDropdownOpen.value = !isDropdownOpen.value;
-};
-
-const selectOption = (optionId) => {
-    if (optionId !== props.modelValue) {
-        emit('update:modelValue', optionId);
+    if (options && typeof options === 'object') {
+        return Object.values(options);
     }
-    isDropdownOpen.value = false;
-};
+    return [];
+})
 
-const handleClickOutside = (event) => {
-    if (dropdownRef.value && badgeRef.value && !dropdownRef.value.contains(event.target) && !badgeRef.value.contains(event.target)) {
-        isDropdownOpen.value = false;
+const currentOption = computed(() =>
+    currentOptions.value.find(o => o.id === props.modelValue)
+)
+
+const currentStyle = computed(() => ({
+    color: currentOption.value?.color || '#333',
+    backgroundColor: currentOption.value?.bg || '#eee'
+}))
+
+const toggle = () => {
+    if (props.editable) isOpen.value = !isOpen.value
+}
+
+const select = (id) => {
+    if (id !== props.modelValue) {
+        emit('update:modelValue', id)
     }
-};
+    isOpen.value = false
+}
 
-onMounted(() => { document.addEventListener('click', handleClickOutside); });
-onUnmounted(() => { document.removeEventListener('click', handleClickOutside); });
+const displayLabel = computed(() => {
+    return currentOption.value
+        ? currentOption.value.label
+        : 'Unknown'
+})
+
+const handleClickOutside = (e) => {
+    if (containerRef.value && !containerRef.value.contains(e.target)) {
+        isOpen.value = false
+    }
+}
+
+onMounted(() => document.addEventListener('click', handleClickOutside))
+onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 </script>
 
 <template>
-    <div class="badge-wrapper">
-        <span ref="badgeRef" class="span-badge" :class="{ 'badge--editable': editable }"
-            :style="{ color: currentOption.color, backgroundColor: currentOption.bgColor }" @click="toggleDropdown">
-            {{ currentOption.label }}
+    <div class="badge-wrapper" ref="containerRef">
+        <span
+            class="span-badge"
+            :class="{ 'badge--editable': editable }"
+            :style="currentStyle"
+            @click="toggle"
+        >
+            {{ displayLabel }}
 
-            <Icon v-if="editable" icon="mdi:chevron-down" class="dropdown-arrow"
-                :class="{ 'dropdown-arrow--open': isDropdownOpen }" />
-        </span>
+            <Icon
+                v-if="editable"
+                icon="mdi:chevron-down"
+                class="dropdown-arrow"
+                :class="{ 'dropdown-arrow--open': isOpen }" 
+            />
+            </span>
 
         <Transition name="fade">
-            <div v-if="editable && isDropdownOpen" ref="dropdownRef" class="dropdown-menu">
-                <div v-for="opt in currentOptions" :key="opt.id" class="dropdown-item"
-                    :class="{ 'dropdown-item--active': opt.id == modelValue }" @click="selectOption(opt.id)">
+            <div v-if="editable && isOpen" class="dropdown-menu">
+                <div
+                    v-for="opt in currentOptions"
+                    :key="opt.id"
+                    class="dropdown-item"
+                    :class="{ 'dropdown-item--active': opt.id === modelValue }"
+                    @click="select(opt.id)"
+                >
                     <span class="dot" :style="{ backgroundColor: opt.color }"></span>
+                    
                     <span class="label">{{ opt.label }}</span>
-                    <Icon v-if="opt.id == modelValue" icon="mdi:check" class="check-icon" />
+                    
+                    <Icon 
+                        v-if="opt.id === modelValue" 
+                        icon="mdi:check" 
+                        class="check-icon" 
+                    />
                 </div>
             </div>
         </Transition>
     </div>
 </template>
+
 
 <style scoped>
 .badge-wrapper {

@@ -36,19 +36,19 @@
                         <div class="info-group">
                             <span class="info-label">TYPE</span>
                             <span>
-                                <BaseBadge variant="type" v-model="task.type" :value="task.type"></BaseBadge>
+                                <BaseBadge variant="type" v-model="task.type"></BaseBadge>
                             </span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">PRIORITY</span>
                             <span>
-                                <BaseBadge variant="priority" v-model="task.priority" value="medium"></BaseBadge>
+                                <BaseBadge variant="priority" v-model="task.priority"></BaseBadge>
                             </span>
                         </div>
                         <div class="info-group">
                             <span class="info-label">STATUS</span>
                             <span>
-                                <BaseBadge variant="status" v-model="task.status" value="working"></BaseBadge>
+                                <BaseBadge variant="status" v-model="task.status"></BaseBadge>
                             </span>
                         </div>
                     </div>
