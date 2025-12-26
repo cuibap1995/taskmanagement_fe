@@ -55,11 +55,9 @@ const handleToast = (type, title, message) => {
 }
 const handleSubmit = () => {
     const result = validateTask(form, prop.mode);
-    console.log(result);
     if (!result.valid) {
         err.value.field = result.field;
         err.value.message = result.message;
-        handleToast('error', 'error', `${err.value.message} `)
         return;
     }
     try {
@@ -139,7 +137,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                     <label for="project">Project <span style="color: red">*</span></label>
                     <select name="project_id" id="project" v-model="form.project_id" ref="fieldRefs.project_id">
                         <option value="" disabled selected>Select a Project</option>
-                        <option value=11>Project 1</option>
+                        <option value=1>Project 1</option>
                     </select>
                     <small v-if="err.field === 'project_id'" class="error-text">
                         {{ err.message }}
@@ -225,7 +223,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
             </div>
             <div class="flex-btn-btn" v-if="prop.mode === 'update'">
                 <div class="deleteBtn">
-                    <BaseButton type-button="danger" @click="emit('delete')">
+                    <BaseButton type-button="danger" @click.prevent="emit('delete')">
                         <Icon icon="gravity-ui:trash-bin" />Delete
                     </BaseButton>
                 </div>
@@ -234,7 +232,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                         <Icon icon="charm:cross" />
                         Cancel
                     </BaseButton>
-                    <BaseButton type-button="primary">
+                    <BaseButton type-button="primary" type="submit">
                         <Icon icon="charm:tick" />Update
                     </BaseButton>
                 </div>

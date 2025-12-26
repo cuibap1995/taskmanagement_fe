@@ -73,7 +73,7 @@
                             <option value="">All Status</option>
                             <option value="open">Open</option>
                             <option value="working">Working</option>
-                            <option value="pending">Pending Review</option>
+                            <option value="pending review">Pending Review</option>
                             <option value="completed">Completed</option>
                         </select>
                     </div>
@@ -365,13 +365,10 @@ const openDeleteModalMulti = () => {
 const confirmDelete = async () => {
     try {
         isLoading.value = true;
-
-        const isDeleted = await deleteTask(deletingTaskId.value);
         showDeleteModal.value = false;
-        if (isDeleted) {
-            await fetchTasks();
-            handleToast('success', 'Success', 'Task deleted successfully');
-        }
+        await deleteTask(deletingTaskId.value);
+        await fetchTasks();
+        handleToast('success', 'Success', 'Task deleted successfully');
     } catch (error) {
         console.log(error);
         handleToast('error', "Error", 'Failed to delete task');

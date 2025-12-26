@@ -98,7 +98,7 @@
                             formatDate(task.expected_start_date) }}</span>
                         </div>
                         <div class="meta-item"><span>Due Date</span> <span class="bold">{{ formatDate(task.due_date)
-                                }}</span></div>
+                        }}</span></div>
                         <div class="meta-item"><span>Last Updated</span> <span class="italic">2 hours ago</span></div>
                     </div>
                 </section>
@@ -262,11 +262,11 @@ const confirmDelete = async () => {
     try {
         isDeleteLoading.value = true;
         showDeleteModal.value = false;
-        const isDeleted = await deleteTask(deletingTaskId.value);
-        if (isDeleted) {
-            router.push('/tasks');
-            handleToast('success', 'Success', 'Task deleted successfully');
-        }
+        await deleteTask(deletingTaskId.value);
+        handleToast('success', 'Success', 'Task deleted successfully');
+        setTimeout(() => {
+            router.back();
+        }, 2000);
     } catch (error) {
         console.log(error);
         handleToast('error', "Error", 'Failed to delete task');
@@ -279,9 +279,6 @@ const fetchDetail = async () => {
     try {
         const res = await getTaskById(taskId);
         task.value = res.data;
-        if (task.value) {
-            handleToast('success', 'success', 'Load task successfully');
-        }
     } catch (e) {
         console.log(e);
     } finally {

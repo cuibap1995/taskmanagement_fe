@@ -44,7 +44,7 @@ const handleCreate = async (payload) => {
     handleToast('success', "Success", 'Task created successfully');
     setTimeout(() => {
       router.back();
-    }, 3000);
+    }, 2000);
   } catch (e) {
     handleToast('error', "Error", 'Failed to create task');
     console.log(e);
