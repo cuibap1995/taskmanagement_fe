@@ -73,7 +73,7 @@
                             <option value="">All Status</option>
                             <option value="open">Open</option>
                             <option value="working">Working</option>
-                            <option value="pending">Pending Review</option>
+                            <option value="pending review">Pending Review</option>
                             <option value="completed">Completed</option>
                         </select>
                     </div>
