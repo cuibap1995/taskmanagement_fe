@@ -55,11 +55,9 @@ const handleToast = (type, title, message) => {
 }
 const handleSubmit = () => {
     const result = validateTask(form, prop.mode);
-    console.log(result);
     if (!result.valid) {
         err.value.field = result.field;
         err.value.message = result.message;
-        handleToast('error', 'error', `${err.value.message} `)
         return;
     }
     try {

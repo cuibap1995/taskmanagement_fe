@@ -361,13 +361,10 @@ const openDeleteModalMulti = () => {
 const confirmDelete = async () => {
     try {
         isLoading.value = true;
-
-        const isDeleted = await deleteTask(deletingTaskId.value);
         showDeleteModal.value = false;
-        if (isDeleted) {
-            await fetchTasks();
-            handleToast('success', 'Success', 'Task deleted successfully');
-        }
+        await deleteTask(deletingTaskId.value);
+        await fetchTasks();
+        handleToast('success', 'Success', 'Task deleted successfully');
     } catch (error) {
         console.log(error);
         handleToast('error', "Error", 'Failed to delete task');

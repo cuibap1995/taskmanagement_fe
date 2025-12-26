@@ -98,7 +98,7 @@
                             formatDate(task.expected_start_date) }}</span>
                         </div>
                         <div class="meta-item"><span>Due Date</span> <span class="bold">{{ formatDate(task.due_date)
-                                }}</span></div>
+                        }}</span></div>
                         <div class="meta-item"><span>Last Updated</span> <span class="italic">2 hours ago</span></div>
                     </div>
                 </section>
@@ -279,9 +279,6 @@ const fetchDetail = async () => {
     try {
         const res = await getTaskById(taskId);
         task.value = res.data;
-        if (task.value) {
-            handleToast('success', 'success', 'Load task successfully');
-        }
     } catch (e) {
         console.log(e);
     } finally {

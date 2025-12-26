@@ -47,7 +47,6 @@ const fetchTask = async () => {
   try {
     const res = await getTaskById(id);
     formData.value = res.data;
-    handleToast('success', 'success', "Load task successfully")
   } catch (e) {
     console.log(e);
     handleToast('error', 'error', "Fail to load task")
