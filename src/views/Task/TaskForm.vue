@@ -5,6 +5,7 @@ import { reactive, watch, ref } from "vue";
 import { validateTask } from "@/validations/Task/task.validate";
 import { MAX_TASK_DATE } from '@/constants/date.const';
 import BaseToast from '@/components/ui/BaseToast.vue';
+import { TASK_TYPE, TASK_PRIORITY, TASK_STATUS } from '@/constants/taskEnum';
 const prop = defineProps({
     mode: {
         type: String,
@@ -20,9 +21,9 @@ const emit = defineEmits(['submit', 'cancel', 'delete']);
 const form = reactive({
     title: '',
     description: '',
-    status: 'open',
-    priority: 'medium',
-    type: 'task',
+    status: 1,      
+    priority: 2,    
+    type: 1,
     progress: 0,
     expected_start_date: null,
     expected_end_date: null,
@@ -83,13 +84,13 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
         form.assignee_id = data.assignee_id ?? 1;
         form.created_by = data.created_by ?? 1;
         form.due_date = data.due_date ?? null;
-        form.priority = data.priority ?? 'medium';
+        form.priority = data.priority ?? 2;
         form.expected_end_date = data.expected_end_date ?? null;
         form.expected_start_date = data.expected_start_date ?? null;
         form.progress = data.progress ?? 0;
-        form.status = data.status;
+        form.status = data.status ?? 1;
         form.project_id = data.project_id ?? 11;
-        form.type = data.type ?? '';
+        form.type = data.type ?? 1;
     }
     if (mode === 'create') {
         resetForm();
@@ -113,10 +114,9 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 <div class="field" :class="{ error: err.field === 'type' }">
                     <label for="type">Type <span style="color: red">*</span></label>
                     <select name="type" id="type" v-model="form.type" ref="fieldRefs.type">
-                        <option value="task" selected>Task</option>
-                        <option value="bug">Bug</option>
-                        <option value="feature">Feature</option>
-                        <option value="enhancement">Enhancement</option>
+                        <option v-for="item in TASK_TYPE" :key="item.id" :value="item.id">
+                            {{ item.label }}
+                        </option>
                     </select>
                     <small v-if="err.field === 'type'" class="error-text">
                         {{ err.message }}
@@ -125,9 +125,9 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 <div class="field" :class="{ error: err.field === 'priority' }">
                     <label for="priority">Priority <span style="color: red">*</span></label>
                     <select name="priority" v-model="form.priority" id="priority" ref="fieldRefs.priority">
-                        <option value="high">High</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="low">Low</option>
+                        <option v-for="item in TASK_PRIORITY" :key="item.id" :value="item.id">
+                            {{ item.label }}
+                        </option>
                     </select>
                     <small v-if="err.field === 'priority'" class="error-text">
                         {{ err.message }}
@@ -153,10 +153,9 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                     ref="fieldRefs.status">
                     <label for="status">Status <span style="color: red">*</span></label>
                     <select name="status" id="status" v-model="form.status">
-                        <option value="open" selected>Open</option>
-                        <option value="working">Working</option>
-                        <option value="pending review">Pending Review</option>
-                        <option value="completed">Completed</option>
+                        <option v-for="item in TASK_STATUS" :key="item.id" :value="item.id">
+                            {{ item.label }}
+                        </option>
                     </select>
                     <small v-if="err.field === 'status'" class="error-text">
                         {{ err.message }}

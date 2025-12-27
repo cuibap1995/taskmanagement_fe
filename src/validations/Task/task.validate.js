@@ -1,3 +1,5 @@
+import { TASK_TYPE, TASK_PRIORITY, TASK_STATUS } from '@/constants/taskEnum';
+
 export const validateTask = (form, mode = "create") => {
   if (!form.title || !form.title.trim()) {
     return { valid: false, field: "title", message: "Title is required" };
@@ -18,24 +20,20 @@ export const validateTask = (form, mode = "create") => {
     };
   }
 
-  const typeList = ["bug", "feature", "task", "enhancement"];
   if (!form.type) {
     return { valid: false, field: "type", message: "Type is required" };
   }
-  if (!typeList.includes(form.type)) {
-    return { valid: false, field: "type", message: "Invalid type" };
+  const validTypes = Object.values(TASK_TYPE).map(item => item.id);
+  if (!validTypes.includes(Number(form.type))) {
+    return { valid: false, field: "type", message: "Invalid type selected" };
   }
 
-  const priorityList = ["low", "medium", "high"];
   if (!form.priority) {
     return { valid: false, field: "priority", message: "Priority is required" };
   }
-  if (!priorityList.includes(form.priority)) {
-    return {
-      valid: false,
-      field: "priority",
-      message: "Invalid priority",
-    };
+  const validPriorities = Object.values(TASK_PRIORITY).map(item => item.id);
+  if (!validPriorities.includes(Number(form.priority))) {
+    return { valid: false, field: "priority", message: "Invalid priority selected" };
   }
   if (!form.project_id) {
     return {
@@ -100,12 +98,12 @@ export const validateTask = (form, mode = "create") => {
 
   if (mode === "update") {
     // status
-    const statusList = ["open", "working", "pending review", "completed"];
     if (!form.status) {
       return { valid: false, field: "status", message: "Status is required" };
     }
-    if (!statusList.includes(form.status)) {
-      return { valid: false, field: "status", message: "Invalid status" };
+    const validStatuses = Object.values(TASK_STATUS).map(item => item.id);
+    if (!validStatuses.includes(Number(form.status))) {
+      return { valid: false, field: "status", message: "Invalid status selected" };
     }
 
     if (form.progress === null || form.progress === undefined) {
