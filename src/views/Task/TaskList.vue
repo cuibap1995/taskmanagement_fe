@@ -58,23 +58,21 @@
                     <div class="filter-row-select">
                         <select v-model="filters.type">
                             <option value="">All Type</option>
-                            <option value="task">Task</option>
-                            <option value="feature">Feature</option>
-                            <option value="bug">Bug</option>
-                            <option value="enhancement">Enhancement</option>
+                            <option v-for="item in TASK_TYPE" :key="item.id" :value="item.id">
+                                {{ item.label }}
+                            </option>
                         </select>
                         <select v-model="filters.priority">
                             <option value="">All Priority</option>
-                            <option value="high">High</option>
-                            <option value="medium">Medium</option>
-                            <option value="low">Low</option>
+                            <option v-for="item in TASK_PRIORITY" :key="item.id" :value="item.id">
+                                {{ item.label }}
+                            </option>
                         </select>
                         <select v-model="filters.status">
                             <option value="">All Status</option>
-                            <option value="open">Open</option>
-                            <option value="working">Working</option>
-                            <option value="pending review">Pending Review</option>
-                            <option value="completed">Completed</option>
+                            <option v-for="item in TASK_STATUS" :key="item.id" :value="item.id">
+                                {{ item.label }}
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -142,11 +140,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-if="isLoading">
-                            <td colspan="10" style="text-align: center;padding: 20px">Loading data...</td>
-                        </tr>
-                        <tr v-else-if="tasks.length === 0">
-                            <td colspan="10" style="text-align: center; padding: 20px;">No Data Found</td>
+                        <tr v-if="tasks.length === 0">
+                            <td colspan="10">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <Icon icon="mdi:clipboard-text-search-outline" />
+                                    </div>
+                                    <h3 class="empty-title">No Tasks Found</h3>
+                                    <p class="empty-desc">
+                                        We couldn't find any tasks matching your filters. <br>
+                                        Try adjusting your search criteria or clear filters.
+                                    </p>
+                                </div>
+                            </td>
                         </tr>
                         <tr v-else v-for="task in tasks" :key="task.task_id">
                             <td><input type="checkbox" v-model="selectedTask" :value="task.task_id" /></td>
@@ -233,6 +239,8 @@ import { deleteMultipleTask, searchTask, updateMultipleTask } from '@/services/t
 import { deleteTask } from '@/services/taskService';
 import BaseToast from '@/components/ui/BaseToast.vue';
 import router from "@/router";
+import { hideLoading, showLoading } from '@/utils/loading';
+import { TASK_STATUS, TASK_PRIORITY, TASK_TYPE } from '@/constants/taskEnum';
 
 const initialFilters = {
     project_id: '',
@@ -247,7 +255,6 @@ const initialFilters = {
 };
 
 const tasks = ref([]);
-const isLoading = ref(false);
 const pagination = ref({
     current_page: 1,
     last_page: 1,
@@ -320,7 +327,7 @@ const handleSaveEdit = async () => {
     }
 }
 const fetchTasks = async (page = 1) => {
-    isLoading.value = true;
+    showLoading();
     try {
         filters.page = page;
         const res = await searchTask(filters);
@@ -332,7 +339,7 @@ const fetchTasks = async (page = 1) => {
         console.log("Error:", error);
         handleToast('error', "Error", 'Failed to load tasks');
     } finally {
-        isLoading.value = false;
+        hideLoading();
     }
 };
 
@@ -364,7 +371,7 @@ const openDeleteModalMulti = () => {
 }
 const confirmDelete = async () => {
     try {
-        isLoading.value = true;
+        showLoading();
         showDeleteModal.value = false;
         await deleteTask(deletingTaskId.value);
         await fetchTasks();
@@ -374,7 +381,7 @@ const confirmDelete = async () => {
         handleToast('error', "Error", 'Failed to delete task');
     } finally {
         deletingTaskId.value = null;
-        isLoading.value = false;
+        hideLoading();
     }
 }
 const closeToast = () => {
@@ -792,6 +799,42 @@ select:focus {
     background-color: #f1f5f9;
 }
 
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    /* Tăng padding nhìn cho thoáng */
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 64px;
+    color: #cbd5e1;
+    /* Màu xám nhạt */
+    margin-bottom: 16px;
+    background: #f8fafc;
+    padding: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+}
+
+.empty-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0 0 8px 0;
+}
+
+.empty-desc {
+    font-size: 14px;
+    color: var(--grey-color);
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+    max-width: 400px;
+}
+
 @media (max-width: 768px) {
 
     .filter-row-search,
@@ -806,20 +849,16 @@ select:focus {
         gap: 15px;
     }
 
-    .bulk-action-bar {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-
-    .bulk-action-bar .button-group {
+    .filter-row-actions .button-group {
         width: 100%;
+        display: flex;
         flex-wrap: wrap;
+        gap: 10px;
     }
 
-    .bulk-action-bar .button-group>* {
+    .filter-row-actions .button-group>* {
         flex: 1;
-        min-width: 120px;
+        min-width: 45%;
     }
 }
 

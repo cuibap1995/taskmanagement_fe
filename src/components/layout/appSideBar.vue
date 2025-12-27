@@ -180,7 +180,25 @@ nav.collapsed .redirectATag {
 
 @media (max-width: 768px) {
   .sidebar-footer {
-    display: none;
+    display: none !important;
+  }
+  .logoText,
+  .sideBarItem span,
+  .redirectATag span {
+    display: block !important;
+  }
+  nav.collapsed .logo {
+    justify-content: flex-start !important;
+    padding: 0 16px !important;
+  }
+
+  nav.collapsed .redirectATag {
+    justify-content: flex-start !important;
+    padding: 10px 12px !important;
+  }
+
+  nav.collapsed .sideBarMenu {
+    padding: 0 12px !important;
   }
 }
 </style>

@@ -46,6 +46,7 @@ const toggleCollapse = () => {
 .area-sidebar {
   grid-area: sidebar;
   transition: all 0.3s ease;
+  z-index: 100;
 }
 
 .area-main {
@@ -56,7 +57,7 @@ const toggleCollapse = () => {
 @media (max-width: 768px) {
   .layout,
   .layout.sidebar-collapsed {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important; 
     grid-template-areas: "header" "main";
   }
 
@@ -65,7 +66,7 @@ const toggleCollapse = () => {
     position: fixed;
     top: 0;
     left: -100%;
-    width: 260px;
+    width: 260px !important;
     height: 100vh;
     z-index: 999;
     background-color: var(--background-color);
