@@ -330,10 +330,12 @@ const fetchTasks = async (page = 1) => {
     showLoading();
     try {
         filters.page = page;
+ 
         const res = await searchTask(filters);
         if (res && res.data) {
             tasks.value = res.data;
             pagination.value = res.meta;
+            console.log(tasks) 
         }
     } catch (error) {
         console.log("Error:", error);
