@@ -1,3 +1,5 @@
-export const MAX_TASK_YEAR = 2050;
+const today = new Date();
+const currentYear = today.getFullYear();
 
-export const MAX_TASK_DATE = `${MAX_TASK_YEAR}-12-31`;
+export const minDate = `${currentYear}-01-01`;
+export const maxDate = `${currentYear + 1}-12-31`;

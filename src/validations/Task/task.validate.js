@@ -1,4 +1,13 @@
-import { TASK_TYPE, TASK_PRIORITY, TASK_STATUS } from '@/constants/taskEnum';
+import { TASK_TYPE, TASK_PRIORITY, TASK_STATUS } from "@/constants/taskEnum";
+import { normalizeDate } from "../../assets/js/dateFormat";
+
+const today = normalizeDate(new Date());
+const currentYear = today.getFullYear();
+
+const isYearValid = (date) => {
+  const year = date.getFullYear();
+  return year === currentYear || year === currentYear + 1;
+};
 
 export const validateTask = (form, mode = "create") => {
   if (!form.title || !form.title.trim()) {
@@ -20,21 +29,29 @@ export const validateTask = (form, mode = "create") => {
     };
   }
 
+  // ---------- TYPE ----------
   if (!form.type) {
     return { valid: false, field: "type", message: "Type is required" };
   }
-  const validTypes = Object.values(TASK_TYPE).map(item => item.id);
+  const validTypes = Object.values(TASK_TYPE).map((i) => i.id);
   if (!validTypes.includes(Number(form.type))) {
     return { valid: false, field: "type", message: "Invalid type selected" };
   }
 
+  // ---------- PRIORITY ----------
   if (!form.priority) {
     return { valid: false, field: "priority", message: "Priority is required" };
   }
-  const validPriorities = Object.values(TASK_PRIORITY).map(item => item.id);
+  const validPriorities = Object.values(TASK_PRIORITY).map((i) => i.id);
   if (!validPriorities.includes(Number(form.priority))) {
-    return { valid: false, field: "priority", message: "Invalid priority selected" };
+    return {
+      valid: false,
+      field: "priority",
+      message: "Invalid priority selected",
+    };
   }
+
+  // ---------- PROJECT ----------
   if (!form.project_id) {
     return {
       valid: false,
@@ -42,14 +59,37 @@ export const validateTask = (form, mode = "create") => {
       message: "Project is required",
     };
   }
-  if (form.expected_start_date && isNaN(Date.parse(form.expected_start_date))) {
-    return {
-      valid: false,
-      field: "expected_start_date",
-      message: "Invalid start date",
-    };
+
+  // ---------- EXPECTED START DATE ----------
+  if (form.expected_start_date) {
+    if (isNaN(Date.parse(form.expected_start_date))) {
+      return {
+        valid: false,
+        field: "expected_start_date",
+        message: "Invalid start date",
+      };
+    }
+
+    const startDate = normalizeDate(form.expected_start_date);
+
+    if (startDate < today) {
+      return {
+        valid: false,
+        field: "expected_start_date",
+        message: "Start date must be today or in the future",
+      };
+    }
+
+    if (!isYearValid(startDate)) {
+      return {
+        valid: false,
+        field: "expected_start_date",
+        message: "Start date must be within this year or next year",
+      };
+    }
   }
 
+  // ---------- EXPECTED END DATE ----------
   if (form.expected_end_date) {
     if (isNaN(Date.parse(form.expected_end_date))) {
       return {
@@ -58,29 +98,76 @@ export const validateTask = (form, mode = "create") => {
         message: "Invalid end date",
       };
     }
-    if (
-      form.expected_start_date &&
-      new Date(form.expected_end_date) < new Date(form.expected_start_date)
-    ) {
+
+    const endDate = normalizeDate(form.expected_end_date);
+
+    if (endDate <= today) {
       return {
         valid: false,
         field: "expected_end_date",
-        message: "End date must be after start date",
+        message: "End date must be after today",
+      };
+    }
+
+    if (form.expected_start_date) {
+      const startDate = normalizeDate(form.expected_start_date);
+      if (endDate <= startDate) {
+        return {
+          valid: false,
+          field: "expected_end_date",
+          message: "End date must be after start date",
+        };
+      }
+    }
+
+    if (!isYearValid(endDate)) {
+      return {
+        valid: false,
+        field: "expected_end_date",
+        message: "End date must be within this year or next year",
       };
     }
   }
 
+  // ---------- DUE DATE ----------
   if (!form.due_date) {
     return { valid: false, field: "due_date", message: "Due date is required" };
   }
+
   if (isNaN(Date.parse(form.due_date))) {
+    return { valid: false, field: "due_date", message: "Invalid due date" };
+  }
+
+  const dueDate = normalizeDate(form.due_date);
+
+  if (dueDate <= today) {
     return {
       valid: false,
       field: "due_date",
-      message: "Invalid due date",
+      message: "Due date must be after today",
     };
   }
 
+  if (form.expected_start_date) {
+    const startDate = normalizeDate(form.expected_start_date);
+    if (dueDate <= startDate) {
+      return {
+        valid: false,
+        field: "due_date",
+        message: "Due date must be after expected start date",
+      };
+    }
+  }
+
+  if (!isYearValid(dueDate)) {
+    return {
+      valid: false,
+      field: "due_date",
+      message: "Due date must be within this year or next year",
+    };
+  }
+
+  // ---------- CREATED BY ----------
   if (!form.created_by) {
     return {
       valid: false,
@@ -96,14 +183,18 @@ export const validateTask = (form, mode = "create") => {
     };
   }
 
+  // ---------- UPDATE MODE ----------
   if (mode === "update") {
-    // status
     if (!form.status) {
       return { valid: false, field: "status", message: "Status is required" };
     }
-    const validStatuses = Object.values(TASK_STATUS).map(item => item.id);
+    const validStatuses = Object.values(TASK_STATUS).map((i) => i.id);
     if (!validStatuses.includes(Number(form.status))) {
-      return { valid: false, field: "status", message: "Invalid status selected" };
+      return {
+        valid: false,
+        field: "status",
+        message: "Invalid status selected",
+      };
     }
 
     if (form.progress === null || form.progress === undefined) {
