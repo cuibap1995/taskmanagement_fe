@@ -74,8 +74,8 @@
                     <div class="user-box">
                         <div class="user-avatar">AD</div>
                         <div class="user-meta">
-                            <p class="user-name">Nguyễn Văn A</p>
-                            <p class="user-email">nguyenvana@email.com</p>
+                            <p class="user-name">{{ task.assignee ? task.assignee.username : "" }}</p>
+                            <p class="user-email">{{ task.assignee ? task.assignee.email : '' }}</p>
                         </div>
                     </div>
                 </section>

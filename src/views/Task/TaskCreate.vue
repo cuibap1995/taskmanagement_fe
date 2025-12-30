@@ -16,7 +16,6 @@ import { ref } from 'vue';
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const taskFormRef = ref(null);
 const isToastDisplay = ref(false);
 const isLeaving = ref(false);
 const toastTitle = ref('');

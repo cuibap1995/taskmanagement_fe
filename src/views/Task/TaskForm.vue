@@ -6,7 +6,7 @@ import { validateTask } from "@/validations/Task/task.validate";
 import { maxDate, minDate } from '@/constants/date.const';
 import BaseToast from '@/components/ui/BaseToast.vue';
 import { TASK_TYPE, TASK_PRIORITY, TASK_STATUS } from '@/constants/taskEnum';
-import {scrollToError} from '@/assets/js/errFocus';
+import { scrollToError } from '@/assets/js/errFocus';
 const prop = defineProps({
     mode: {
         type: String,
