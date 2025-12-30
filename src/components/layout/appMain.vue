@@ -1,8 +1,12 @@
 <template>
   <main class="main">
+    <BreadCrumbs></BreadCrumbs>
     <slot></slot>
   </main>
 </template>
+<script setup>
+import BreadCrumbs from '../ui/BreadCrumbs.vue';
+</script>
 <style scoped>
 .main {
   width: 100%;

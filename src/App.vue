@@ -1,5 +1,5 @@
 <template>
-    <LoadingSpinner/>
+    <LoadingSpinner />
     <RouterView></RouterView>
 </template>
 <script setup>

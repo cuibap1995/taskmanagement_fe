@@ -330,12 +330,10 @@ const fetchTasks = async (page = 1) => {
     showLoading();
     try {
         filters.page = page;
- 
         const res = await searchTask(filters);
         if (res && res.data) {
             tasks.value = res.data;
             pagination.value = res.meta;
-            console.log(tasks) 
         }
     } catch (error) {
         console.log("Error:", error);
@@ -807,7 +805,6 @@ select:focus {
     align-items: center;
     justify-content: center;
     padding: 60px 20px;
-    /* Tăng padding nhìn cho thoáng */
     text-align: center;
 }
 
