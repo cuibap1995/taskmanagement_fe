@@ -33,7 +33,7 @@ const fetchProject = async () => {
   const res = await getAllProject();
   projectList.value = res.data;
 }
-onMounted(() => fetchProject());
+onMounted(async () => await fetchProject());
 const handleToast = (type, title, message) => {
   isToastDisplay.value = true;
   toastType.value = type;

@@ -55,8 +55,8 @@ const fetchTask = async () => {
     handleToast('error', 'error', "Fail to load task")
   }
 };
-onMounted(() => {
-  fetchTask();
+onMounted(async () => {
+  await fetchTask();
 });
 const closeToast = () => {
   isLeaving.value = true;

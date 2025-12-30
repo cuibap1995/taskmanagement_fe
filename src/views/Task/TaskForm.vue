@@ -73,7 +73,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
         form.expected_start_date = data.expected_start_date ?? null;
         form.progress = data.progress ?? 0;
         form.status = data.status ?? 1;
-        form.project_id = Number(data.project_id) || null;
+        form.project_id = Number(data.project.project_id) || null;
         form.type = data.type ?? 1;
     }
     if (mode === 'create') {
