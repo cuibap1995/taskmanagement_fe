@@ -19,7 +19,7 @@
           </RouterLink>
         </li>
         <li class="sideBarItem">
-          <RouterLink to="projects" class="redirectATag" title="Projects">
+          <RouterLink to="/projects" class="redirectATag" title="Projects">
             <Icon icon="material-symbols:folder-outline" class="sideBarIcon" />
             <span v-show="!collapsed">Projects</span>
           </RouterLink>

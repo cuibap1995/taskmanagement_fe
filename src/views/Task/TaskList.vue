@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <!-- Bulk Action -->
+                <!-- Filter Actions -->
                 <div class="filter-row-actions">
                     <div class="bulk-info">
                         <span class="selection-text" :class="{ 'has-selection': selectedTask.length > 0 }">
@@ -136,26 +136,21 @@
                             <th>PRIORITY</th>
                             <th>STATUS</th>
                             <th>DUE DATE</th>
-                            <th class="text-center">ACTIONS</th>
+                            <th class="text-center col-action">DETAIL</th>
+                            <th class="text-center col-action">DELETE</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="tasks.length === 0">
-                            <td colspan="10">
+                            <td colspan="11">
                                 <div class="empty-state">
-                                    <div class="empty-icon">
-                                        <Icon icon="mdi:clipboard-text-search-outline" />
-                                    </div>
-                                    <h3 class="empty-title">No Tasks Found</h3>
-                                    <p class="empty-desc">
-                                        We couldn't find any tasks matching your filters. <br>
-                                        Try adjusting your search criteria or clear filters.
-                                    </p>
                                 </div>
                             </td>
                         </tr>
+
                         <tr v-else v-for="task in tasks" :key="task.task_id">
                             <td><input type="checkbox" v-model="selectedTask" :value="task.task_id" /></td>
+
                             <td class="task-cell">
                                 <span class="task-title">{{ task.title }}</span>
                             </td>
@@ -168,30 +163,25 @@
                             <td class="bold">{{ task.progress || 0 }}%</td>
                             <td>
                                 <BaseBadge variant="priority" :modelValue="task.priority" :editable="isEditMode"
-                                    @update:model-value="value => markEdited(task.task_id, 'priority', value)">
-                                </BaseBadge>
+                                    @update:model-value="value => markEdited(task.task_id, 'priority', value)" />
                             </td>
                             <td>
                                 <BaseBadge variant="status" :modelValue="task.status" :editable="isEditMode"
-                                    @update:model-value="value => markEdited(task.task_id, 'status', value)">
-                                </BaseBadge>
+                                    @update:model-value="value => markEdited(task.task_id, 'status', value)" />
                             </td>
-
                             <td>{{ task.due_date }}</td>
 
-                            <td>
-                                <div class="action-buttons">
-                                    <div>
-                                        <button class="icon-btn edit" :taskId=task.task_id
-                                            @click="toEditPage(task.task_id)">
-                                            <Icon icon="weui:eyes-on-outlined" />
-                                        </button>
-                                    </div>
-                                    <button class="icon-btn delete" :taskId=task.task_id
-                                        @click="openDeleteModal(task.task_id)">
-                                        <Icon icon="mdi:delete-outline" />
-                                    </button>
-                                </div>
+                            <td class="text-center">
+                                <button class="icon-btn edit" @click="toEditPage(task.task_id)" title="View Details">
+                                    <Icon icon="weui:eyes-on-outlined" />
+                                </button>
+                            </td>
+
+                            <td class="text-center">
+                                <button class="icon-btn delete" @click="openDeleteModal(task.task_id)"
+                                    title="Delete Task">
+                                    <Icon icon="mdi:delete-outline" />
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -455,138 +445,6 @@ const toEditPage = (id) => {
 </script>
 
 <style scoped>
-/* Title Header */
-.page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.title {
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0;
-    color: var(--text-color);
-}
-
-.subtitle {
-    font-size: 12px;
-    color: var(--grey-color);
-    margin-top: 0;
-    margin-bottom: 12px;
-}
-
-/* Panel Filter */
-.filter-card {
-    background: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-}
-
-.filter-row-search,
-.filter-row-select {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: var(--text-color);
-}
-
-.input-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.input-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--grey-color);
-    transition: color 0.2s;
-}
-
-input,
-select {
-    width: 100%;
-    height: 40px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0 12px 0 38px;
-    box-sizing: border-box;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    color: var(--primary-color);
-    cursor: pointer;
-}
-
-select {
-    padding-left: 12px;
-    background-color: var(--white-color);
-}
-
-input:focus,
-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(0, 191, 165, 0.1);
-}
-
-.input-wrapper:focus-within .input-icon {
-    color: var(--primary-color);
-}
-
-.filter-main-row {
-    display: flex;
-    gap: 12px;
-    align-items: flex-end;
-    margin-bottom: 20px;
-}
-
-.filter-main-row .flex-1 {
-    flex: 1;
-}
-
-.advanced-toggle-btn {
-    height: 40px;
-    padding: 0 16px;
-    background: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-
-.advanced-toggle-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.advanced-filters {
-    animation: slideDown 0.3s ease;
-    margin-bottom: 20px;
-}
-
 .filter-row-search-extra {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -600,276 +458,28 @@ select:focus {
     gap: 20px;
 }
 
-.filter-row-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid var(--border-color);
-    margin-top: 10px;
+.task-cell {
+    font-weight: 500;
 }
 
-.bulk-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.bulk-action-buttons {
-    display: flex;
-    gap: 12px;
-    padding-left: 15px;
-    border-left: 1px solid var(--border-color);
-}
-
-.btn-action-inline {
-    background: none;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: all 0.2s;
-}
-
-.btn-action-inline.edit {
-    color: #0288d1;
-}
-
-.btn-action-inline.edit:hover {
-    background-color: #e1f5fe;
-}
-
-.btn-action-inline.delete {
-    color: var(--error-color);
-}
-
-.btn-action-inline.delete:hover {
-    background-color: #fbe9e7;
-}
-
-/* Table Container */
-.table-container {
-    background-color: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    margin-top: 24px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.selection-text {
-    font-size: 14px;
-    color: var(--grey-color);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.selection-text.has-selection {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.button-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.button-group button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-.pagination-table {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 24px;
-    background-color: #fcfcfc;
-}
-
-.showing-text {
-    font-size: 16px;
-    color: var(--grey-color);
-}
-
-.pagination {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.page-btn {
-    min-width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border-color);
-    background: var(--white-color);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--text-color);
-    transition: all 0.2s ease;
-}
-
-.page-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.page-btn.active {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--white-color);
-}
-
-.page-dots {
-    color: var(--grey-color);
-    padding: 0 4px;
-}
-
-.table-wrapper {
-    overflow-x: auto;
-}
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-}
-
-.data-table thead {
-    background-color: var(--background-color);
-    color: var(--white-color);
-}
-
-.data-table th {
-    padding: 10px 4px;
-    font-size: 14px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.data-table td {
-    padding: 10px 4px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 14px;
+.task-title {
     color: var(--text-color);
 }
 
-.data-table tbody tr:hover {
-    background-color: #f9fafb;
+.col-check {
+    width: 40px;
 }
 
-.action-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    display: flex;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.icon-btn.view {
-    color: #00bcd4;
-}
-
-.icon-btn.delete {
-    color: var(--error-color);
-}
-
-.icon-btn:hover {
-    background-color: #f1f5f9;
-}
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    text-align: center;
-}
-
-.empty-icon {
-    font-size: 64px;
-    color: #cbd5e1;
-    /* Màu xám nhạt */
-    margin-bottom: 16px;
-    background: #f8fafc;
-    padding: 24px;
-    border-radius: 50%;
-    display: inline-flex;
-}
-
-.empty-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-color);
-    margin: 0 0 8px 0;
-}
-
-.empty-desc {
-    font-size: 14px;
-    color: var(--grey-color);
-    margin: 0 0 24px 0;
-    line-height: 1.5;
-    max-width: 400px;
+.bold {
+    font-weight: 600;
 }
 
 @media (max-width: 768px) {
 
-    .filter-row-search,
+    .filter-row-search-extra,
     .filter-row-select {
         grid-template-columns: 1fr;
         gap: 12px;
-    }
-
-    .filter-row-actions {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .filter-row-actions .button-group {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .filter-row-actions .button-group>* {
-        flex: 1;
-        min-width: 45%;
-    }
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 }
 </style>

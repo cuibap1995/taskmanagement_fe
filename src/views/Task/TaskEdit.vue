@@ -105,7 +105,6 @@ const confirmDelete = async () => {
 </script>
 <style scoped>
 .webTitle {
-  margin-top: 50px;
   margin-bottom: 20px;
 }
 

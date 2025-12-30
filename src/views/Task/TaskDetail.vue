@@ -318,51 +318,6 @@ onMounted(() => {
     gap: 12px;
 }
 
-/* Grid Layout */
-.detail-main-container {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 40px;
-    background-color: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-}
-
-.block-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 0 20px 0;
-    padding-top: 24px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-color);
-}
-
-.description-text {
-    line-height: 1.6;
-    color: var(--grey-color);
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-}
-
-.info-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.info-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--grey-color);
-}
-
 .progress-wrap {
     width: 100%;
 }
@@ -374,6 +329,10 @@ onMounted(() => {
     font-weight: 600;
     font-size: 14px;
     color: var(--grey-color);
+}
+
+.percent {
+    color: var(--primary-color);
 }
 
 .progress-bar-bg {
@@ -388,49 +347,7 @@ onMounted(() => {
     background: var(--primary-color);
 }
 
-.user-box {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.user-avatar {
-    width: 44px;
-    height: 44px;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-}
-
-.user-email {
-    margin: 0;
-    font-size: 12px;
-    color: var(--grey-color);
-}
-
-.meta-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.meta-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    color: var(--grey-color);
-}
-
-.comments-section,
-.activity-section {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0;
+.comments-section {
     margin-top: 48px;
 }
 
@@ -449,7 +366,7 @@ onMounted(() => {
     border-radius: 8px;
     background-color: #fff;
     overflow: hidden;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .textarea-wrapper textarea {
@@ -458,41 +375,39 @@ onMounted(() => {
     border: none;
     outline: none;
     resize: none;
-    font-family: inherit;
     font-size: 14px;
     display: block;
-    color: var(--text-color);
-    box-sizing: border-box;
 }
 
-.footer-buttons {
+.comments-list {
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .comment-item {
     display: flex;
     gap: 16px;
-    margin-top: 20px;
 }
 
 .comment-content-wrapper {
     flex: 1;
-    background-color: #f1f3f4;
+    background-color: #f8fafc;
     padding: 16px;
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 .comment-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 .user-name {
     font-weight: 700;
     color: var(--text-color);
+    font-size: 14px;
     margin: 0;
 }
 
@@ -501,19 +416,44 @@ onMounted(() => {
     color: var(--grey-color);
 }
 
+.comment-text {
+    font-size: 14px;
+    color: var(--text-color);
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
 .comment-actions {
-    margin-top: 10px;
     display: flex;
-    gap: 15px;
+    gap: 16px;
 }
 
 .action-btn {
     background: none;
     border: none;
     font-size: 12px;
+    font-weight: 600;
     color: var(--grey-color);
     cursor: pointer;
-    font-weight: 600;
+    padding: 0;
+}
+
+.action-btn:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.footer-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+/* --- ACTIVITY HISTORY --- */
+.activity-section {
+    margin-top: 48px;
 }
 
 .activity-list {

@@ -5,6 +5,10 @@ import TaskList from "@/views/Task/TaskList.vue";
 import TaskCreate from "@/views/Task/TaskCreate.vue";
 import TaskDetail from "@/views/Task/TaskDetail.vue";
 import TaskEdit from "@/views/Task/TaskEdit.vue";
+import ProjectList from "@/views/Project/ProjectList.vue";
+import ProjectDetail from "@/views/Project/ProjectDetail.vue";
+import ProjectCreate from "@/views/Project/ProjectCreate.vue";
+import ProjectEdit from "@/views/Project/ProjectEdit.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -61,6 +65,53 @@ const router = createRouter({
               { isHome: true, path: "/" },
               { label: "Tasks", path: "/tasks" },
               { label: "Edit" },
+            ],
+          },
+        },
+        {
+          path: 'projects',
+          name: 'projects',
+          component: ProjectList, 
+          meta: {
+            breadcrumbs: [
+              { isHome: true, path: "/" },
+              { label: "Projects", path: "/projects" },
+            ],
+          },
+        },
+        {
+          path: 'projects/create',
+          name: 'projectsCreate',
+          component: ProjectCreate, 
+          meta: {
+            breadcrumbs: [
+              { isHome: true, path: "/" },
+              { label: "Projects", path: "/projects" },
+              { label: "Create" },
+            ],
+          },
+        },
+        {
+          path: 'projects/detail/:id',
+          name: 'projectsDetail',
+          component: ProjectDetail, 
+          meta: {
+            breadcrumbs: [
+              { isHome: true, path: "/" },
+              { label: "Projects", path: "/projects" },
+              { label: "Detail"},
+            ],
+          },
+        },
+        {
+          path: 'projects/edit/:id',
+          name: 'projectsEdit',
+          component: ProjectEdit, 
+          meta: {
+            breadcrumbs: [
+              { isHome: true, path: "/" },
+              { label: "Projects", path: "/projects" },
+              { label: "Edit"},
             ],
           },
         },

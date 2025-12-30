@@ -15,5 +15,5 @@ export const TASK_TYPE = {
   1: { id: 1, label: 'Task', color: '#64748B', bg: '#ECEFF1' },
   2: { id: 2, label: 'Feature', color: '#1D4ED8', bg: '#E3F2FD' },  
   3: { id: 3, label: 'Bug', color: '#DC2626', bg: '#FCE4EC' }, 
-  4: { id: 4, label: 'Improve', color: '#7C3AED', bg: '#F3E8FF' }
+  4: { id: 4, label: 'Enhancement', color: '#7C3AED', bg: '#F3E8FF' }
 };
