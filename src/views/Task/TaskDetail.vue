@@ -74,8 +74,8 @@
                     <div class="user-box">
                         <div class="user-avatar">AD</div>
                         <div class="user-meta">
-                            <p class="user-name">Nguyễn Văn A</p>
-                            <p class="user-email">nguyenvana@email.com</p>
+                            <p class="user-name">{{ task.assignee ? task.assignee.username : "" }}</p>
+                            <p class="user-email">{{ task.assignee ? task.assignee.email : '' }}</p>
                         </div>
                     </div>
                 </section>
@@ -98,7 +98,7 @@
                             formatDate(task.expected_start_date) }}</span>
                         </div>
                         <div class="meta-item"><span>Due Date</span> <span class="bold">{{ formatDate(task.due_date)
-                        }}</span></div>
+                                }}</span></div>
                         <div class="meta-item"><span>Last Updated</span> <span class="italic">2 hours ago</span></div>
                     </div>
                 </section>
@@ -286,9 +286,9 @@ const fetchDetail = async () => {
 
     }
 }
-onMounted(() => {
+onMounted(async () => {
     try {
-        fetchDetail();
+        await fetchDetail();
 
     } catch (e) {
         console.log(e);

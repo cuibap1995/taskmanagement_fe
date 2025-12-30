@@ -1,11 +1,11 @@
 <script setup>
 import BaseButton from "@/components/ui/BaseButton.vue";
 import { Icon } from "@iconify/vue";
-import { reactive, watch, ref } from "vue";
+import { reactive, watch, ref, onMounted } from "vue";
 import { validateTask } from "@/validations/Task/task.validate";
 import { maxDate, minDate } from '@/constants/date.const';
-import BaseToast from '@/components/ui/BaseToast.vue';
 import { TASK_TYPE, TASK_PRIORITY, TASK_STATUS } from '@/constants/taskEnum';
+import { scrollToError } from '@/assets/js/errFocus';
 const prop = defineProps({
     mode: {
         type: String,
@@ -14,6 +14,10 @@ const prop = defineProps({
     data: {
         type: Object,
         default: () => ({}),
+    },
+    dataProject: {
+        type: Array,
+        default: () => ([])
     },
 });
 const err = ref({});
@@ -28,37 +32,17 @@ const form = reactive({
     expected_start_date: null,
     expected_end_date: null,
     due_date: null,
-    project_id: 11,
+    project_id: prop.data.project_id || null,
     assignee_id: null,
     created_by: 1,
     updated_by: 1
 });
-const isToastDisplay = ref(false);
-const isLeaving = ref(false);
-const toastTitle = ref('');
-const toastType = ref('success');
-const toastMessage = ref('');
-const closeToast = () => {
-    isLeaving.value = true;
-    setTimeout(() => {
-        isLeaving.value = false;
-        isToastDisplay.value = false;
-    }, 300);
-}
-const handleToast = (type, title, message) => {
-    isToastDisplay.value = true;
-    toastType.value = type;
-    toastTitle.value = title;
-    toastMessage.value = message
-    setTimeout(() => {
-        closeToast();
-    }, 2000);
-}
 const handleSubmit = () => {
     const result = validateTask(form, prop.mode);
     if (!result.valid) {
         err.value.field = result.field;
         err.value.message = result.message;
+        scrollToError(err.value);
         return;
     }
     try {
@@ -89,7 +73,7 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
         form.expected_start_date = data.expected_start_date ?? null;
         form.progress = data.progress ?? 0;
         form.status = data.status ?? 1;
-        form.project_id = data.project_id ?? 11;
+        form.project_id = Number(data.project.project_id) || null;
         form.type = data.type ?? 1;
     }
     if (mode === 'create') {
@@ -135,9 +119,10 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                 </div>
                 <div class="field" :class="{ error: err.field === 'project_id' }">
                     <label for="project">Project <span style="color: red">*</span></label>
-                    <select name="project_id" id="project" v-model="form.project_id">
-                        <option value="" disabled selected>Select a Project</option>
-                        <option value=1>Project 1</option>
+                    <select name="project_id" id="project" v-model="form.project_id" v-if="prop.dataProject.length">
+                        <option value="" disabled>Select a Project</option>
+                        <option v-for="prj in prop.dataProject" :key="prj.project_id" :value="Number(prj.project_id)">{{
+                            prj.project_name }}</option>
                     </select>
                     <small v-if="err.field === 'project_id'" class="error-text">
                         {{ err.message }}
@@ -232,8 +217,6 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                     </BaseButton>
                 </div>
             </div>
-            <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage"
-                :toast-title="toastTitle" @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
         </section>
     </form>
 </template>

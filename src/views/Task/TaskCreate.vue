@@ -4,24 +4,24 @@
     <small>Fill in the details to create a new task for your project</small>
   </div>
 
-  <TaskForm mode="create" ref="taskFormRef" @cancel="handleCancel" @submit="handleCreate"></TaskForm>
+  <TaskForm mode="create" :dataProject="projectList" @cancel="handleCancel" @submit="handleCreate"></TaskForm>
   <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage" :toast-title="toastTitle"
     @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
 </template>
 <script setup>
-import { createTask } from "@/services/taskService";
+import { createTask, getAllProject } from "@/services/taskService";
 import TaskForm from "./TaskForm.vue";
 import BaseToast from '@/components/ui/BaseToast.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const taskFormRef = ref(null);
 const isToastDisplay = ref(false);
 const isLeaving = ref(false);
 const toastTitle = ref('');
 const toastType = ref('success');
 const toastMessage = ref('');
+const projectList = ref({});
 const closeToast = () => {
   isLeaving.value = true;
   setTimeout(() => {
@@ -29,6 +29,11 @@ const closeToast = () => {
     isToastDisplay.value = false;
   }, 300);
 }
+const fetchProject = async () => {
+  const res = await getAllProject();
+  projectList.value = res.data;
+}
+onMounted(async () => await fetchProject());
 const handleToast = (type, title, message) => {
   isToastDisplay.value = true;
   toastType.value = type;

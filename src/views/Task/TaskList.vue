@@ -338,8 +338,8 @@ const clearFilter = () => {
     fetchTasks(1);
 }
 
-onMounted(() => {
-    fetchTasks();
+onMounted(async () => {
+    await fetchTasks();
 });
 
 const cancelDelete = () => {

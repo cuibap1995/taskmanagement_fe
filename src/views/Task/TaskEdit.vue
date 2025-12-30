@@ -4,7 +4,8 @@
     <small>Update task information and track progress</small>
   </div>
 
-  <TaskForm mode="update" :data="formData" @submit="handleUpdate" @cancel="handleCancel" @delete="openDeleteModal">
+  <TaskForm mode="update" :data="formData" :dataProject="projectData" @submit="handleUpdate" @cancel="handleCancel"
+    @delete="openDeleteModal">
   </TaskForm>
   <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage" :toast-title="toastTitle"
     @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
@@ -15,7 +16,7 @@
 </template>
 <script setup>
 import TaskForm from "./TaskForm.vue";
-import { deleteTask, getTaskById, updateTask } from "@/services/taskService";
+import { deleteTask, getAllProject, getTaskById, updateTask } from "@/services/taskService";
 import { useRoute, useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import BaseToast from "@/components/ui/BaseToast.vue";
@@ -24,7 +25,7 @@ import BaseConfirmModal from '@/components/ui/BaseConfirmModal.vue';
 const route = useRoute();
 const router = useRouter();
 const formData = ref({});
-
+const projectData = ref([]);
 const id = route.params.id;
 const toastTitle = ref('success');
 const toastMessage = ref('');
@@ -46,14 +47,16 @@ const handleToast = (type, title, message) => {
 const fetchTask = async () => {
   try {
     const res = await getTaskById(id);
+    const resProject = await getAllProject();
     formData.value = res.data;
+    projectData.value = resProject.data;
   } catch (e) {
     console.log(e);
     handleToast('error', 'error', "Fail to load task")
   }
 };
-onMounted(() => {
-  fetchTask();
+onMounted(async () => {
+  await fetchTask();
 });
 const closeToast = () => {
   isLeaving.value = true;

@@ -8,7 +8,10 @@ import {
   deleteMultiTaskHttp,
   updateMultiTaskHttp,
 } from "../http/task.http.js";
-
+import {
+  GetAllProjectHttp,
+  GetProjectByIdHttp,
+} from "../http/projects.http.js";
 export const createTask = async (data) => {
   const res = await createTaskHttp(data);
   return res.data;
@@ -39,5 +42,13 @@ export const deleteMultipleTask = async (id) => {
 };
 export const updateMultipleTask = async (payload) => {
   const res = await updateMultiTaskHttp(payload);
+  return res.data;
+};
+export const getAllProject = async () => {
+  const res = await GetAllProjectHttp();
+  return res.data;
+};
+export const getProjectById = async (id) => {
+  const res = await GetProjectByIdHttp(id);
   return res.data;
 };
