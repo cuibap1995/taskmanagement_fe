@@ -6,6 +6,7 @@ import { validateTask } from "@/validations/Task/task.validate";
 import { maxDate, minDate } from '@/constants/date.const';
 import BaseToast from '@/components/ui/BaseToast.vue';
 import { TASK_TYPE, TASK_PRIORITY, TASK_STATUS } from '@/constants/taskEnum';
+import {scrollToError} from '@/assets/js/errFocus';
 const prop = defineProps({
     mode: {
         type: String,
@@ -33,32 +34,12 @@ const form = reactive({
     created_by: 1,
     updated_by: 1
 });
-const isToastDisplay = ref(false);
-const isLeaving = ref(false);
-const toastTitle = ref('');
-const toastType = ref('success');
-const toastMessage = ref('');
-const closeToast = () => {
-    isLeaving.value = true;
-    setTimeout(() => {
-        isLeaving.value = false;
-        isToastDisplay.value = false;
-    }, 300);
-}
-const handleToast = (type, title, message) => {
-    isToastDisplay.value = true;
-    toastType.value = type;
-    toastTitle.value = title;
-    toastMessage.value = message
-    setTimeout(() => {
-        closeToast();
-    }, 2000);
-}
 const handleSubmit = () => {
     const result = validateTask(form, prop.mode);
     if (!result.valid) {
         err.value.field = result.field;
         err.value.message = result.message;
+        scrollToError(err.value);
         return;
     }
     try {
@@ -232,8 +213,6 @@ watch(() => [prop.data, prop.mode], ([data, mode]) => {
                     </BaseButton>
                 </div>
             </div>
-            <BaseToast v-if="isToastDisplay" :toast-type="toastType" :toast-message="toastMessage"
-                :toast-title="toastTitle" @close="closeToast" :class="{ 'card--leaving': isLeaving }"></BaseToast>
         </section>
     </form>
 </template>
