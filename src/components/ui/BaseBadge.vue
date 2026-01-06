@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Icon } from '@iconify/vue'
-import { TASK_STATUS, TASK_PRIORITY, TASK_TYPE } from '@/constants/taskEnum';
 
 const props = defineProps({
-    variant: { type: String, required: true }, // status | priority | type
+    options: {
+        type: [Object, Array],
+        required: true
+    },
     modelValue: { type: Number, required: true },
     editable: { type: Boolean, default: false }
 })
@@ -14,20 +16,15 @@ const emit = defineEmits(['update:modelValue'])
 const isOpen = ref(false)
 const containerRef = ref(null)
 
-const enumMap = {
-  status: TASK_STATUS,
-  priority: TASK_PRIORITY,
-  type: TASK_TYPE
-};
-
 const currentOptions = computed(() => {
-    const options = enumMap[props.variant]
-    if(Array.isArray(options)) {
-        return options;
+    const inputOptions = props.options; 
+    if (Array.isArray(inputOptions)) {
+        return inputOptions;
     }
-    if (options && typeof options === 'object') {
-        return Object.values(options);
+    if (inputOptions && typeof inputOptions === 'object') {
+        return Object.values(inputOptions);
     }
+    
     return [];
 })
 
@@ -69,40 +66,22 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 <template>
     <div class="badge-wrapper" ref="containerRef">
-        <span
-            class="span-badge"
-            :class="{ 'badge--editable': editable }"
-            :style="currentStyle"
-            @click="toggle"
-        >
+        <span class="span-badge" :class="{ 'badge--editable': editable }" :style="currentStyle" @click="toggle">
             {{ displayLabel }}
 
-            <Icon
-                v-if="editable"
-                icon="mdi:chevron-down"
-                class="dropdown-arrow"
-                :class="{ 'dropdown-arrow--open': isOpen }" 
-            />
-            </span>
+            <Icon v-if="editable" icon="mdi:chevron-down" class="dropdown-arrow"
+                :class="{ 'dropdown-arrow--open': isOpen }" />
+        </span>
 
         <Transition name="fade">
             <div v-if="editable && isOpen" class="dropdown-menu">
-                <div
-                    v-for="opt in currentOptions"
-                    :key="opt.id"
-                    class="dropdown-item"
-                    :class="{ 'dropdown-item--active': opt.id === modelValue }"
-                    @click="select(opt.id)"
-                >
+                <div v-for="opt in currentOptions" :key="opt.id" class="dropdown-item"
+                    :class="{ 'dropdown-item--active': opt.id === modelValue }" @click="select(opt.id)">
                     <span class="dot" :style="{ backgroundColor: opt.color }"></span>
-                    
+
                     <span class="label">{{ opt.label }}</span>
-                    
-                    <Icon 
-                        v-if="opt.id === modelValue" 
-                        icon="mdi:check" 
-                        class="check-icon" 
-                    />
+
+                    <Icon v-if="opt.id === modelValue" icon="mdi:check" class="check-icon" />
                 </div>
             </div>
         </Transition>
