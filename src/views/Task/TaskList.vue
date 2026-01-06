@@ -58,19 +58,21 @@
                     <div class="filter-row-select">
                         <select v-model="filters.type">
                             <option value="">All Type</option>
-                            <option v-for="item in TASK_TYPE" :key="item.id" :value="item.id">
+                            <option v-for="item in Object.values(TASK_TYPE)" :key="item.id" :value="item.id">
                                 {{ item.label }}
                             </option>
                         </select>
+
                         <select v-model="filters.priority">
                             <option value="">All Priority</option>
-                            <option v-for="item in TASK_PRIORITY" :key="item.id" :value="item.id">
+                            <option v-for="item in Object.values(TASK_PRIORITY)" :key="item.id" :value="item.id">
                                 {{ item.label }}
                             </option>
                         </select>
+
                         <select v-model="filters.status">
                             <option value="">All Status</option>
-                            <option v-for="item in TASK_STATUS" :key="item.id" :value="item.id">
+                            <option v-for="item in Object.values(TASK_STATUS)" :key="item.id" :value="item.id">
                                 {{ item.label }}
                             </option>
                         </select>
@@ -155,18 +157,18 @@
                                 <span class="task-title">{{ task.title }}</span>
                             </td>
                             <td>
-                                <BaseBadge variant="type" :modelValue="task.type" :editable="isEditMode"
+                                <BaseBadge :options="TASK_TYPE" :modelValue="task.type" :editable="isEditMode"
                                     @update:model-value="value => markEdited(task.task_id, 'type', value)" />
                             </td>
                             <td>{{ task.project ? task.project.project_name : '' }}</td>
                             <td>{{ task.assignee ? task.assignee.username : 'Unassigned' }}</td>
                             <td class="bold">{{ task.progress || 0 }}%</td>
                             <td>
-                                <BaseBadge variant="priority" :modelValue="task.priority" :editable="isEditMode"
+                                <BaseBadge :options="TASK_PRIORITY" :modelValue="task.priority" :editable="isEditMode"
                                     @update:model-value="value => markEdited(task.task_id, 'priority', value)" />
                             </td>
                             <td>
-                                <BaseBadge variant="status" :modelValue="task.status" :editable="isEditMode"
+                                <BaseBadge :options="TASK_STATUS" :modelValue="task.status" :editable="isEditMode"
                                     @update:model-value="value => markEdited(task.task_id, 'status', value)" />
                             </td>
                             <td>{{ task.due_date }}</td>
