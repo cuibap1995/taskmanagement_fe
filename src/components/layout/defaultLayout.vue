@@ -33,6 +33,7 @@ const toggleCollapse = () => {
   grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: var(--header-height) 1fr;
   grid-template-areas: "sidebar header" "sidebar main";
+  overflow: hidden;
 }
 
 .layout.sidebar-collapsed {
@@ -52,6 +53,8 @@ const toggleCollapse = () => {
 .area-main {
   grid-area: main;
   overflow-y: auto;
+  height: 100%;
+  min-height: 0;
 }
 
 @media (max-width: 768px) {

@@ -7,19 +7,22 @@
       </div>
       <ul class="sideBarMenu">
         <li class="sideBarItem">
-          <RouterLink to="/" class="redirectATag" title="Home">
+          <RouterLink to="/" class="redirectATag" title="Home" active-class="ignore-active"
+        exact-active-class="router-link-active">
             <Icon icon="mdi:home-outline" class="sideBarIcon" />
             <span v-show="!collapsed">Home</span>
           </RouterLink>
         </li>
         <li class="sideBarItem">
-          <RouterLink to="/tasks" class="redirectATag" title="Tasks">
+          <RouterLink to="/tasks" class="redirectATag" title="Tasks" 
+          :class="{ 'router-link-active': $route.path.startsWith('/tasks') }">
             <Icon icon="tdesign:task-1" class="sideBarIcon" />
             <span v-show="!collapsed">Tasks</span>
           </RouterLink>
         </li>
         <li class="sideBarItem">
-          <RouterLink to="/projects" class="redirectATag" title="Projects">
+          <RouterLink to="/projects" class="redirectATag" title="Projects"
+          :class="{ 'router-link-active': $route.path.startsWith('/projects') }">
             <Icon icon="material-symbols:folder-outline" class="sideBarIcon" />
             <span v-show="!collapsed">Projects</span>
           </RouterLink>
@@ -170,6 +173,13 @@ nav.collapsed .sidebar-footer {
 nav.collapsed .redirectATag {
   justify-content: center;
   padding: 10px;
+}
+
+.redirectATag.router-link-active {
+  background-color: var(--background-active);
+  color: var(--white-color);
+  font-weight: 700;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 /* ICON */
